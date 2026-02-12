@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum TaskType {
+  CHECK_IN
+  QUIZ
+  TEXT_ANSWER
+  MINI_GAME
+}
+
+enum PointType {
+  TASK_COMPLETION
+  PHOTO_UPLOAD
+  EARLY_LOGIN
+  ADMIN_ADJUSTMENT
+}
+
+enum TicketStatus {
+  ACTIVE
+  WINNER
+  NOT_WINNER
+}
+
+model User {
+  id            String    @id @default(cuid())
+  lineUserId    String    @unique
+  displayName   String
+  pictureUrl    String?
+  role          Role      @default(USER)
+  totalPoints   Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  taskCompletions  TaskCompletion[]
+  photoUploads     PhotoUpload[]
+  pointTransactions PointTransaction[]
+  lotteryTickets   LotteryTicket[]
+}
+
+model DailyTask {
+  id          String    @id @default(cuid())
+  day         Int       @unique // 1-9
+  date        DateTime
+  title       String
+  description String
+  taskType    TaskType
+  taskConfig  Json?     // type-specific config (quiz options, etc.)
+  points      Int       @default(2)
+  isOpen      Boolean   @default(false) // admin controls task availability
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  completions TaskCompletion[]
+}
+
+model TaskCompletion {
+  id          String    @id @default(cuid())
+  userId      String
+  taskId      String
+  answer      String?   // user's answer for quiz/text tasks
+  completedAt DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+  task        DailyTask @relation(fields: [taskId], references: [id])
+
+  @@unique([userId, taskId])
+}
+
+model PhotoUpload {
+  id          String    @id @default(cuid())
+  userId      String
+  imageUrl    String
+  gcsKey      String
+  caption     String?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model PointTransaction {
+  id          String    @id @default(cuid())
+  userId      String
+  amount      Int
+  type        PointType
+  referenceId String?   // taskCompletionId or photoUploadId
+  description String?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+}
+
+model LotteryTicket {
+  id           String       @id @default(cuid())
+  userId       String
+  ticketNumber String       @unique
+  status       TicketStatus @default(ACTIVE)
+  prizeId      String?
+  createdAt    DateTime     @default(now())
+
+  user         User         @relation(fields: [userId], references: [id])
+  prize        Prize?       @relation(fields: [prizeId], references: [id])
+}
+
+model Prize {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  quantity    Int
+  awarded     Int      @default(0)
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+
+  tickets     LotteryTicket[]
+}

@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700;900&display=swap');
+
+@layer base {
+  body {
+    @apply bg-cny-cream text-cny-dark font-serif;
+  }
+}
+
+@layer components {
+  .cny-card {
+    @apply bg-white rounded-xl border-2 border-imperial-gold-200 shadow-md
+           hover:shadow-lg transition-shadow duration-300;
+  }
+
+  .cny-btn-primary {
+    @apply bg-lucky-red text-white font-bold py-3 px-6 rounded-full
+           hover:bg-lucky-red-700 active:bg-lucky-red-800
+           transition-colors duration-200 shadow-md
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .cny-btn-gold {
+    @apply bg-imperial-gold text-white font-bold py-3 px-6 rounded-full
+           hover:bg-imperial-gold-600 active:bg-imperial-gold-700
+           transition-colors duration-200 shadow-md;
+  }
+
+  .cny-border {
+    @apply border-2 border-lucky-red-200 rounded-lg;
+  }
+
+  .cny-gradient {
+    @apply bg-gradient-to-br from-lucky-red to-lucky-red-800;
+  }
+
+  .cny-gold-gradient {
+    @apply bg-gradient-to-r from-imperial-gold-400 via-imperial-gold to-imperial-gold-600;
+  }
+
+  .cny-heading {
+    @apply text-lucky-red font-bold tracking-wide;
+  }
+
+  /* Spring couplet border effect */
+  .spring-couplet {
+    @apply relative border-4 border-lucky-red bg-lucky-red-50 p-4 rounded;
+    box-shadow: inset 0 0 0 2px theme('colors.imperial-gold.DEFAULT');
+  }
+
+  /* Bottom navigation */
+  .bottom-nav {
+    @apply fixed bottom-0 left-0 right-0 bg-white border-t-2 border-lucky-red-100
+           flex justify-around items-center py-2 px-4 z-50;
+  }
+
+  .bottom-nav-item {
+    @apply flex flex-col items-center gap-1 text-xs font-medium
+           text-gray-500 transition-colors duration-200;
+  }
+
+  .bottom-nav-item.active {
+    @apply text-lucky-red;
+  }
+}
+
+@layer utilities {
+  .text-shadow-gold {
+    text-shadow: 0 0 10px rgba(207, 181, 59, 0.5);
+  }
+}
