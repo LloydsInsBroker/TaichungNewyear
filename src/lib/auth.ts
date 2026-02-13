@@ -72,6 +72,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           token.dbId = dbUser.id
           token.role = dbUser.role
           token.totalPoints = dbUser.totalPoints
+        } else {
+          // User was deleted — clear token to force re-login
+          token.dbId = null
+          token.lineUserId = null
         }
       }
       return token

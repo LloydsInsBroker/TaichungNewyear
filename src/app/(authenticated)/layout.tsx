@@ -11,8 +11,8 @@ export default async function AuthenticatedLayout({
 }) {
   const session = await auth()
 
-  if (!session) {
-    redirect('/login')
+  if (!session || !session.user?.id) {
+    redirect('/api/auth/signout')
   }
 
   return (
