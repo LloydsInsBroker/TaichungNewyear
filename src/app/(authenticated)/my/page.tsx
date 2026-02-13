@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import { signOut } from 'next-auth/react'
 
 interface UserProfile {
   id: string
@@ -188,6 +189,14 @@ export default function MyPage() {
           </div>
         </div>
       )}
+
+      {/* Logout button */}
+      <button
+        onClick={() => signOut({ callbackUrl: '/' })}
+        className="w-full py-3 rounded-xl border-2 border-lucky-red-300 text-lucky-red-600 font-bold hover:bg-lucky-red-50 transition-colors"
+      >
+        登出帳號
+      </button>
 
       {/* Recent transactions */}
       <div className="cny-card p-4">
