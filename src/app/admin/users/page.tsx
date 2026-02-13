@@ -39,6 +39,7 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState('')
   const [adjustingId, setAdjustingId] = useState<string | null>(null)
   const [adjustAmount, setAdjustAmount] = useState('')
+  const [adjustDesc, setAdjustDesc] = useState('')
   const [actionLoading, setActionLoading] = useState(false)
 
   // Transaction viewer
@@ -104,7 +105,7 @@ export default function AdminUsersPage() {
       const res = await fetch('/api/admin/users', {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId, adjustPoints: amount }),
+        body: JSON.stringify({ userId, adjustPoints: amount, description: adjustDesc.trim() || undefined }),
       })
       if (!res.ok) {
         const data = await res.json()
@@ -112,6 +113,7 @@ export default function AdminUsersPage() {
       }
       setAdjustingId(null)
       setAdjustAmount('')
+      setAdjustDesc('')
       await fetchUsers(search)
     } catch (err: any) {
       alert(err.message)
@@ -251,30 +253,41 @@ export default function AdminUsersPage() {
                         {user.role === 'ADMIN' ? '移除管理員' : '設為管理員'}
                       </button>
                       {adjustingId === user.id ? (
-                        <div className="flex gap-1">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex gap-1">
+                            <input
+                              type="number"
+                              value={adjustAmount}
+                              onChange={(e) => setAdjustAmount(e.target.value)}
+                              placeholder="+/-"
+                              className="w-16 border border-gray-300 rounded px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            />
+                            <button
+                              onClick={() => submitAdjustPoints(user.id)}
+                              disabled={actionLoading}
+                              className="text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded hover:bg-blue-700 disabled:opacity-50"
+                            >
+                              確認
+                            </button>
+                            <button
+                              onClick={() => {
+                                setAdjustingId(null)
+                                setAdjustAmount('')
+                                setAdjustDesc('')
+                              }}
+                              className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded hover:bg-gray-200"
+                            >
+                              取消
+                            </button>
+                          </div>
                           <input
-                            type="number"
-                            value={adjustAmount}
-                            onChange={(e) => setAdjustAmount(e.target.value)}
-                            placeholder="+/-"
-                            className="w-16 border border-gray-300 rounded px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            type="text"
+                            value={adjustDesc}
+                            onChange={(e) => setAdjustDesc(e.target.value)}
+                            placeholder="說明 (選填)"
+                            maxLength={100}
+                            className="w-full border border-gray-300 rounded px-1 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                           />
-                          <button
-                            onClick={() => submitAdjustPoints(user.id)}
-                            disabled={actionLoading}
-                            className="text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded hover:bg-blue-700 disabled:opacity-50"
-                          >
-                            確認
-                          </button>
-                          <button
-                            onClick={() => {
-                              setAdjustingId(null)
-                              setAdjustAmount('')
-                            }}
-                            className="text-xs bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded hover:bg-gray-200"
-                          >
-                            取消
-                          </button>
                         </div>
                       ) : (
                         <button

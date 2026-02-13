@@ -37,9 +37,11 @@ export const authConfig: NextAuthConfig = {
     signIn: '/login',
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) {
       if (user) {
-        token.lineUserId = user.id
+        // Use providerAccountId (real LINE userId) instead of Auth.js generated UUID
+        const lineId = account?.providerAccountId || (profile as any)?.userId || user.id
+        token.lineUserId = lineId
         token.name = user.name
         token.picture = user.image
       }

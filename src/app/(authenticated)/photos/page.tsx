@@ -188,7 +188,7 @@ export default function PhotosPage() {
       <div className="text-center">
         <h2 className="cny-heading text-2xl mb-1">活動照片牆</h2>
         <p className="text-sm text-imperial-gold-600">
-          分享你的新年歡樂時刻 · 上傳照片 +1 分
+          分享你的新年歡樂時刻 · 上傳照片 +3 分
         </p>
         {total > 0 && (
           <p className="text-xs text-imperial-gold-400 mt-1">

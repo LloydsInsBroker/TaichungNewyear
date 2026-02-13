@@ -1,0 +1,631 @@
+{
+  "exportedAt": "2026-02-13T04:17:06.941Z",
+  "totalUsers": 32,
+  "users": [
+    {
+      "id": "cmljm28te0000w6bkb6la7uzg",
+      "lineUserId": "fd7b9174-3d0c-4670-9d15-12275ac6b8ed",
+      "displayName": "張維倫（Aaron)",
+      "pictureUrl": "https://profile.line-scdn.net/0hniqUfLc4MUZcLBi-v31POSx8Mix_XWhUcUt7JTwsbCZnGXRAdkord2skaCFpGCIXd0srID0ubX5QP0YgQnrNclscbHdgFHYQeUN9pg",
+      "role": "USER",
+      "totalPoints": 0,
+      "createdAt": "2026-02-12T15:25:52.802Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": []
+    },
+    {
+      "id": "cmljm47dx0000w60sxqwe0kjd",
+      "lineUserId": "c4fa60b9-5e5a-4db4-810c-0bbdc839b9bb",
+      "displayName": "張維倫（Aaron)",
+      "pictureUrl": "https://profile.line-scdn.net/0hniqUfLc4MUZcLBi-v31POSx8Mix_XWhUcUt7JTwsbCZnGXRAdkord2skaCFpGCIXd0srID0ubX5QP0YgQnrNclscbHdgFHYQeUN9pg",
+      "role": "ADMIN",
+      "totalPoints": 0,
+      "createdAt": "2026-02-12T15:27:24.261Z",
+      "taskCompletions": 0,
+      "photoUploads": 2,
+      "lotteryTickets": [],
+      "pointTransactions": []
+    },
+    {
+      "id": "cmlk4jmtx0000yx0k7np42uif",
+      "lineUserId": "8ca06cb2-3602-498b-aab8-b894b6f20d71",
+      "displayName": "張維倫（Aaron)",
+      "pictureUrl": "https://profile.line-scdn.net/0hniqUfLc4MUZcLBi-v31POSx8Mix_XWhUcUt7JTwsbCZnGXRAdkord2skaCFpGCIXd0srID0ubX5QP0YgQnrNclscbHdgFHYQeUN9pg",
+      "role": "USER",
+      "totalPoints": 4,
+      "createdAt": "2026-02-13T00:03:17.205Z",
+      "taskCompletions": 0,
+      "photoUploads": 1,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T00:03:17.223Z"
+        },
+        {
+          "amount": 1,
+          "type": "PHOTO_UPLOAD",
+          "description": "照片上傳",
+          "createdAt": "2026-02-13T04:17:02.565Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk54fap0003yx0k4ozf3d3n",
+      "lineUserId": "b9977733-a0b2-4e4d-af33-451f4426a642",
+      "displayName": "政祐 Patrick",
+      "pictureUrl": "https://profile.line-scdn.net/0h-FGPMbmlcmlqKW0HutAMVxp5cQNJWCt7Rxs6D10pJVEEHWY7RRxvCwspKw5UGmZoRkc5XwwvLwtIbnFKRk9ARwcsLxoVZnM_JUxhRwUpfzIiWTVmQSpKVldMJB5TXjU9NCo1dl9TchhXfFAjJkd4UhR_JSNfH2ZgOX4eP28bHOoFKwU8R041D18gJVrR",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T00:19:27.218Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T00:19:27.228Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk7hu4p0006yx0k1cug2eyj",
+      "lineUserId": "5a9508d4-e65b-40d5-8fe2-f254fd931e87",
+      "displayName": "陳俞涵🐳魚丸🍡",
+      "pictureUrl": "https://profile.line-scdn.net/0hIbGG3rivFk1qPglEmZ1ocxpuFSdJT09fFF4OKVw6HCpWC1YeT14MKlw9TH1VCVEfRggLKlg_QH1IbQFdBgVFcSo5Ty4xXAJQPzgQNyRLKXktSzdYQw5bTzhZGzQNaDcdMixQSgk5KCdRSTZPLzhbLAo_C3lUayhlLWl6G28MeM4FPGEYR1lRK183QX7R",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:25:52.202Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:25:52.218Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk7zljd0009yx0kwhcp6k1m",
+      "lineUserId": "87b9883d-b641-439d-88a4-143be23bba52",
+      "displayName": "江靖雯",
+      "pictureUrl": "https://profile.line-scdn.net/0h9xEMYmgOZldoNHfwUsoYKBhkZT1LRT9FRVR6NF8zb2UFDCMBEQcrY1lhMDMGBnZUEFQvNg1kazVkJxExdmKaY28EO2ZUDCEBTVsqtw",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:39:40.873Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:39:40.882Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk7zvcn000cyx0kmlu8q88p",
+      "lineUserId": "3a64a926-cd25-4c33-8c48-8e12bc3c50d1",
+      "displayName": "江靖雯",
+      "pictureUrl": "https://profile.line-scdn.net/0h9xEMYmgOZldoNHfwUsoYKBhkZT1LRT9FRVR6NF8zb2UFDCMBEQcrY1lhMDMGBnZUEFQvNg1kazVkJxExdmKaY28EO2ZUDCEBTVsqtw",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:39:53.592Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:39:53.599Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk808gg000fyx0kpb38mdpt",
+      "lineUserId": "186a9233-49f9-486e-a638-3a4eb554201a",
+      "displayName": "😎賴荷梵😎",
+      "pictureUrl": "https://profile.line-scdn.net/0h7353eqfCaBwYSnbxw3cWImgaa3Y7OzEOMiVzeClONX5wLi5CPX8lL30ZYXlxf39NMH4gKSxMN3s6CVAJZG5MJSkeQC1FCnRKMlhaf2oRdHhte0YWMypgKEsaPk9XA3osXXhTZms3YyRdflw5QVpiG1Q1ZVAmIUEDTx0ESh14Bp93SB9JNS0vei1DPy-j",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:40:10.576Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:40:10.583Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk80mwv000iyx0kz35l2xs6",
+      "lineUserId": "a860f2a8-e558-4cca-8956-0e946716656c",
+      "displayName": "😎賴荷梵😎",
+      "pictureUrl": "https://profile.line-scdn.net/0h7353eqfCaBwYSnbxw3cWImgaa3Y7OzEOMiVzeClONX5wLi5CPX8lL30ZYXlxf39NMH4gKSxMN3s6CVAJZG5MJSkeQC1FCnRKMlhaf2oRdHhte0YWMypgKEsaPk9XA3osXXhTZms3YyRdflw5QVpiG1Q1ZVAmIUEDTx0ESh14Bp93SB9JNS0vei1DPy-j",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:40:29.311Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:40:29.317Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8170j000lyx0kio8kn9pz",
+      "lineUserId": "93f914d8-c8ba-49ee-946b-49ef2247cd9f",
+      "displayName": "王薛舜",
+      "pictureUrl": "https://profile.line-scdn.net/0hWPRRQgjOCH9_Kxlylu52AA97CxVcWlFtAR4UHkwqUksSSEkvUx1DHx0rARpFTxp-UExBTEx7VR1zOH8ZYX30S3gbVU5DE08pWkREnw",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:40:55.364Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:40:55.370Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk81a5e000oyx0k6t56bzn5",
+      "lineUserId": "229a089a-e204-4cd0-a93c-ce193d159e9e",
+      "displayName": "Sky-諾億保經",
+      "pictureUrl": "https://profile.line-scdn.net/0hhf47U2nDN0kZTieP12VJNmkeNCM6P25bZ3x6JnxGO3kke3QcYnt6eCVGOikgfHcaMCl-K39LbykVXUAvBxjLfR5-angldnAfPCF7qQ",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:40:59.427Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:40:59.435Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk827bt000ryx0kb87lh0r2",
+      "lineUserId": "53805d01-76b4-41c5-9fee-9467779e2750",
+      "displayName": "Sky-諾億保經",
+      "pictureUrl": "https://profile.line-scdn.net/0hhf47U2nDN0kZTieP12VJNmkeNCM6P25bZ3x6JnxGO3kke3QcYnt6eCVGOikgfHcaMCl-K39LbykVXUAvBxjLfR5-angldnAfPCF7qQ",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:41:42.425Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:41:42.435Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk835a3000uyx0kvg19eutj",
+      "lineUserId": "a18eb73a-f81b-4b1a-adcb-805484592e45",
+      "displayName": "逸品 Alex",
+      "pictureUrl": "https://profile.line-scdn.net/0hqsXFsVePLlx1Pz_Li4hQYgVvLTZWTndOWQk1MhJsIG8fDGpdWQs2O0I6eTsaBz4NCw5nO0lvdz9XWR0DIgU8SBpvD2orDAdyCgUPYjJiLDESVBp5HhsCbhBAAyUgeWkPJw5hQAJ-BxcgUg50BDJnXRBCEmk8SjBSWmhCCnANQN8aPVkJWFhpOkA2eW_O",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:42:26.428Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:42:26.435Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk843s0000xyx0k0366q0ug",
+      "lineUserId": "52dbc41c-df6e-4a72-ab13-2b33c93366af",
+      "displayName": "Elwin(凡)",
+      "pictureUrl": "https://profile.line-scdn.net/0h4ZR15UlAa3V_SHj3WDgVCg8YaB9cOTJnBy8jEUMYN0UVLSohUHtwFRlKMRdKe3wnBi0lGkgdYUdzWxwTYR6XQXh4NkRDcCwjWicnlQ",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:43:11.137Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:43:11.145Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk88oan0010yx0k87ea0bia",
+      "lineUserId": "797d4946-305f-4e70-8e8a-2018b5f725ed",
+      "displayName": "瑞深",
+      "pictureUrl": "https://profile.line-scdn.net/0he7cRwd3qOhhOKyrDlbhEZz57OXJtWmMKZxgiLnotYyF1Tn5IZU5wfHp8NnsjE3RIZEgnf397Z39COE1-UH3GLEkbZylyE31Oa0R2-A",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:46:44.351Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:46:44.360Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8ad7y0013yx0kxkf84i1x",
+      "lineUserId": "ace2c0b4-442a-4730-bd16-217bdae397c4",
+      "displayName": "Yu Chun Chou（玉㚬）",
+      "pictureUrl": "https://profile.line-scdn.net/0h_91h4wavABYcER93sLt-KGxBA3w_YFkENnQbICoWWCQnIEBHOXFKcS0TWSElKUNDYHAbeSFECSA-ZCEBTREYO1FkHENyJE8cRRI_BHVjJH5Rexk1YyFTFE9LWmNPdh1BZA88EyBsNyFTcQYuVBNHDFQZP015czIeUEZsQBkjbpVzE3dDMXZHcCkYVyWn",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:48:03.311Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:48:03.318Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8ey0r0016yx0km9dcs65l",
+      "lineUserId": "9e0aa4df-f59c-4e91-976b-0e951861f8ad",
+      "displayName": "浚瑋",
+      "pictureUrl": "https://profile.line-scdn.net/0hmuM0y2GuMlpgSS0HM4VMZBAZMTBDOGtIRX95P1EebW5eeXcFGSt6P1MZbGMOLCIEH3p0PgcbZWxCDhZbLkp9Zi4Ua200fBxQSiojYwApKAQUG3JSLXoiXhZNJwNfGyhlB1Q4SBcICjZYfwFJBER1aiBBMBU0PjZ5FB5eDGV7XNkPS0UPTS51PFVAZWnb",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:51:36.891Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:51:36.900Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8h9jt0019yx0k1vyu50p2",
+      "lineUserId": "44679453-4456-49ab-9f27-ae54af62065b",
+      "displayName": "小元",
+      "pictureUrl": "https://profile.line-scdn.net/0hHcwMynwdF0xaNAivegZpcipkFCZ5RU5eIgZYImZkGStgVwMfclMPL21mSn1vBVkaJltff2o2QHx4fVh-Cycwam80LA43fjhmLyRRIjlsMxQQagdpEihcLAdCVS5lfTRtCDBcLBoxPQ4wTDNOHxZcWSRPFzUHUCRqcGN7Gl8Gec81NmAZd1NQKm89QH_h",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:53:25.146Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:53:25.156Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8l19j001cyx0knnoqew2f",
+      "lineUserId": "51934e38-d749-43c4-b88c-cf09bc2eca41",
+      "displayName": "車忠融 Carr 🚗",
+      "pictureUrl": "https://profile.line-scdn.net/0hhDFSVwpfN2trKimsR5tJVRt6NAFIW255FBkvC1YjaVoBSXZqFU4oCw4vawhXGnduFR8sC1l9b11JGRI7EgR4XgtzHSsuTjdVTjweZg1MbDAWbjg-KQ5_bSdaaA4vZXJVGCc5Uil3EDMMTChPMjcrBT5aNR81WidZOX1bPW4YWegEKEA-Rk1wDV4jYFjQ",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:56:21.031Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:56:21.043Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8odcr001fyx0kf545d1du",
+      "lineUserId": "f7012815-c6c8-4157-bbe6-32326c87dd68",
+      "displayName": "威屹",
+      "pictureUrl": "https://profile.line-scdn.net/0hAwvd0jU1HlhbHQs35r1gJytNHTJ4bEdKdS8DPDwaRGFkJAtbICsFPWYeQDw2fl1dJ3gEbGxORz1XDmk-RUvibFwtQ2lnJVkOfnJSuA",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T01:58:56.667Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T01:58:56.683Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8pz7e001iyx0k6uv8fkrh",
+      "lineUserId": "9164d9f0-fb8b-43ca-97b7-ffd0dc923172",
+      "displayName": "🌳玟馨🌟荳荳媽",
+      "pictureUrl": "https://profile.line-scdn.net/0h2jWaD7EQbUV6GHxnttsTOgpIbi9ZaTRXUC4kIkweMnZPKCgTA3sqd0ofMCJCISgTVHslJRsYN3N2CxojZE6RcX0oMHRGICoTX3chpQ",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T02:00:11.643Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T02:00:11.650Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8rpw8001lyx0k9ryh10tl",
+      "lineUserId": "9da53219-945c-4574-9895-182e1f248a6b",
+      "displayName": "苡臻🌹Nameta",
+      "pictureUrl": "https://profile.line-scdn.net/0hdGAZJEdyO2hsIySH8VFFVhxzOAJPUmJ6R0N1XAkhMlBYRH02FxEmXgsiMFBZGittEhYkDQx3bQtOFyxVIBgOZVFUBA0yECJ2QFk_TllDE1EGc3k2HxF1ZgNgZzkqSjhcIUEaTT0hMx4FDyRKQRgObRprCxgvFgVrIXRXPmkRVesDIUw9QUR8DlkqbFvX",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T02:01:32.888Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T02:01:32.897Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8s8x2001oyx0kke0cvli5",
+      "lineUserId": "911b0885-f3a9-406e-85a2-314c0335777a",
+      "displayName": "🌳玟馨🌟荳荳媽",
+      "pictureUrl": "https://profile.line-scdn.net/0h2jWaD7EQbUV6GHxnttsTOgpIbi9ZaTRXUC4kIkweMnZPKCgTA3sqd0ofMCJCISgTVHslJRsYN3N2CxojZE6RcX0oMHRGICoTX3chpQ",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T02:01:57.542Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T02:01:57.550Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk8sg2e001ryx0kxuqtyetm",
+      "lineUserId": "ee2f99a9-02c1-44a4-b05a-41c2a766dd42",
+      "displayName": "苡臻🌹Nameta",
+      "pictureUrl": "https://profile.line-scdn.net/0hdGAZJEdyO2hsIySH8VFFVhxzOAJPUmJ6R0N1XAkhMlBYRH02FxEmXgsiMFBZGittEhYkDQx3bQtOFyxVIBgOZVFUBA0yECJ2QFk_TllDE1EGc3k2HxF1ZgNgZzkqSjhcIUEaTT0hMx4FDyRKQRgObRprCxgvFgVrIXRXPmkRVesDIUw9QUR8DlkqbFvX",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T02:02:06.806Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T02:02:06.812Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk9034v001uyx0kipzslhco",
+      "lineUserId": "f18c0aca-8e12-4490-864b-599668614110",
+      "displayName": "茗茗",
+      "pictureUrl": "https://profile.line-scdn.net/0hucWZjGxzKkx6IzSx825UcgpzKSZZUnNeAURjeE5wcn9DRmkaXkA3KBshJnpAGm1IVBVnLUYrdylYZ25BMEwYLS97dRgDUTQTUD4Hfz19Kj8hSRZ0UhANXipIAiZCEjlpPQ43UAtnDnw1egpvNT0iSxpRNjk6FQ9tBXRGGn8RRM8VIV0ZV0RtKk8qfX_B",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T02:08:03.295Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T02:08:03.310Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlk90wtq001xyx0k7w92lc9w",
+      "lineUserId": "c1f23570-2ec6-438c-a4d4-a5de089fc569",
+      "displayName": "政諺🌕Jonas",
+      "pictureUrl": "https://profile.line-scdn.net/0h4bQpOiVwa018CXQTbf8VcwxZaCdfeDJfU2YnIk8OYS1IPSVMUWwsfEsAMHwTOiwTAj9zLhxZMX9eekoZTBxkXCxbRX4mS0pAVQpyLUtNXRNJbkRTEWYiIhJsVy5Fa2peFRNlXjN9UBQcWGhSLidhTCphRwIdWC5GOF4HG3k7Bc4TCxwYUW4sK0kAPH7H",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T02:08:41.774Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T02:08:41.784Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlkahqeq0020yx0ki8h3gsrk",
+      "lineUserId": "b80bac77-7502-46ef-b803-402fa53d6145",
+      "displayName": "李啓豪（小七）",
+      "pictureUrl": "https://profile.line-scdn.net/0hsfjTVwTRLElHLTJNgK9Sdzd9LyNkXHVbOUhreHUtdyl5TmkePk8wKyYve30oH25IYkxge3F_cn1leGwaAg4rXRloInsJdgpMdyoYQXpfegsabxJWAxJibTYxOx8jcx14MitkZxd5OQUcGzsDKTsmfDZ_dzkvVgwcEHpAH0IfQsooL1scakprL3Ike3r8",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T02:49:46.226Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T02:49:46.239Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlkaohb80023yx0kive1qtp5",
+      "lineUserId": "7edc7b58-ed09-4b9a-a8de-befdc3af77a5",
+      "displayName": "史丹力###Stanley",
+      "pictureUrl": "https://profile.line-scdn.net/0hhWmUUnoNN3hALCdPVttJBzB8NBJjXW5qPEksHCUkbRt7Tnh9OE5wTCJ5akl7FXUvZU4vFiAoOk1MP0AeXnrLTEccakl8FHAuZUN7mA",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T02:55:01.029Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T02:55:01.038Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlkb7ibp0026yx0kbv7um62p",
+      "lineUserId": "4683a462-ab36-488c-b0aa-f2e103752ebd",
+      "displayName": "❤️～Olivia～❤️",
+      "pictureUrl": "https://profile.line-scdn.net/0hB6ar-5GIHRlMCw5s6uxjZjxbHnNvekQLM2RaeSsORHklawlKM2Vbf3AMQCB3Pl5KaGxRfXoIQStAGGp_Ul3hLUs7QChwM1pPaWRR-Q",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T03:09:48.805Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T03:09:48.816Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlkbje3t0029yx0kahvrwa32",
+      "lineUserId": "81f4b64c-99ca-4bb9-9e7d-c616f845afa7",
+      "displayName": "婧恩Felicia、",
+      "pictureUrl": "https://profile.line-scdn.net/0haHXsZaN3Pmd1CiFkmQ1AWQVaPQ1We2d1DGQkBEkIZFJKP38zCThxVEdZZV5BbXlkWm8jBElZZQdXaTw0OCssezh6Kz81fBdQXQkfRSkNCxIhTxczBS8raRwLBjwrMxBzEGRtdARYZCoXX3liHzsPeTNWJictZCVMAF1SMXA4UOQaCEkyWG15AUADaVTO",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T03:19:03.210Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T03:19:03.217Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlkctgky002cyx0kfr651z72",
+      "lineUserId": "246238a5-a7e7-441b-978e-6ad98ffcb7a0",
+      "displayName": "車忠融 Carr 🚗",
+      "pictureUrl": "https://profile.line-scdn.net/0hhDFSVwpfN2trKimsR5tJVRt6NAFIW255FBkvC1YjaVoBSXZqFU4oCw4vawhXGnduFR8sC1l9b11JGRI7EgR4XgtzHSsuTjdVTjweZg1MbDAWbjg-KQ5_bSdaaA4vZXJVGCc5Uil3EDMMTChPMjcrBT5aNR81WidZOX1bPW4YWegEKEA-Rk1wDV4jYFjQ",
+      "role": "USER",
+      "totalPoints": 3,
+      "createdAt": "2026-02-13T03:54:52.595Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": [
+        {
+          "amount": 3,
+          "type": "EARLY_LOGIN",
+          "description": "搶先登入獎勵",
+          "createdAt": "2026-02-13T03:54:52.606Z"
+        }
+      ]
+    },
+    {
+      "id": "cmlkdgl22002fyx0kt2cv0efi",
+      "lineUserId": "ae12c70f-9401-489d-9d53-a8db8f08f71c",
+      "displayName": "瑞深",
+      "pictureUrl": "https://profile.line-scdn.net/0he7cRwd3qOhhOKyrDlbhEZz57OXJtWmMKZxgiLnotYyF1Tn5IZU5wfHp8NnsjE3RIZEgnf397Z39COE1-UH3GLEkbZylyE31Oa0R2-A",
+      "role": "USER",
+      "totalPoints": 0,
+      "createdAt": "2026-02-13T04:12:51.482Z",
+      "taskCompletions": 0,
+      "photoUploads": 0,
+      "lotteryTickets": [],
+      "pointTransactions": []
+    }
+  ]
+}

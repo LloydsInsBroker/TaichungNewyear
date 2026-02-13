@@ -108,7 +108,7 @@ function FloatingEmojis() {
 const rules = [
   { icon: '🔑', text: '使用 LINE 帳號登入' },
   { icon: '✅', text: '每天完成任務獲得 2 分' },
-  { icon: '📸', text: '上傳照片額外獲得 1 分' },
+  { icon: '📸', text: '上傳照片額外獲得 3 分' },
   { icon: '🎫', text: '每 6 分獲得 1 張抽獎券' },
   { icon: '🏆', text: '活動結束後抽出大獎！' },
 ]

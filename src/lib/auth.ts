@@ -13,18 +13,20 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   callbacks: {
     ...authConfig.callbacks,
-    async signIn({ user }) {
-      if (!user.id) return false
+    async signIn({ user, account, profile }) {
+      // Use providerAccountId (real LINE userId) instead of Auth.js generated UUID
+      const lineUserId = account?.providerAccountId || (profile as any)?.userId
+      if (!lineUserId) return false
 
       // Check if user already exists
       const existingUser = await prisma.user.findUnique({
-        where: { lineUserId: user.id },
+        where: { lineUserId },
       })
 
       if (existingUser) {
         // Existing user — just update profile
         await prisma.user.update({
-          where: { lineUserId: user.id },
+          where: { lineUserId },
           data: {
             displayName: user.name || 'LINE User',
             pictureUrl: user.image || null,
@@ -34,7 +36,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         // New user — create account
         const newUser = await prisma.user.create({
           data: {
-            lineUserId: user.id,
+            lineUserId,
             displayName: user.name || 'LINE User',
             pictureUrl: user.image || null,
           },
@@ -54,9 +56,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       return true
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, account, profile }) {
       if (user) {
-        token.lineUserId = user.id
+        const lineId = account?.providerAccountId || (profile as any)?.userId || user.id
+        token.lineUserId = lineId
         token.name = user.name
         token.picture = user.image
       }

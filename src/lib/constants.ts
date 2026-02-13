@@ -5,7 +5,7 @@ export const TOTAL_DAYS = 9
 
 // Points configuration
 export const POINTS_PER_TASK = 2
-export const POINTS_PER_PHOTO = 1
+export const POINTS_PER_PHOTO = 3
 export const POINTS_PER_LOTTERY_TICKET = 6
 
 // GCS

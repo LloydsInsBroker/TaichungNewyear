@@ -37,10 +37,11 @@ export async function PATCH(request: Request) {
   if (error) return error
 
   const body = await request.json()
-  const { userId, role, adjustPoints } = body as {
+  const { userId, role, adjustPoints, description } = body as {
     userId: string
     role?: 'USER' | 'ADMIN'
     adjustPoints?: number
+    description?: string
   }
 
   if (!userId) {
@@ -60,7 +61,7 @@ export async function PATCH(request: Request) {
   }
 
   if (typeof adjustPoints === 'number' && adjustPoints !== 0) {
-    await addPoints(userId, adjustPoints, PointType.ADMIN_ADJUSTMENT, undefined, '管理員調整')
+    await addPoints(userId, adjustPoints, PointType.ADMIN_ADJUSTMENT, undefined, description || '管理員調整')
   }
 
   const updatedUser = await prisma.user.findUnique({
