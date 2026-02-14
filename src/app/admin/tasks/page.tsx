@@ -11,6 +11,7 @@ interface Task {
   points: number
   date: string
   isOpen: boolean
+  isClosed: boolean
 }
 
 export default function AdminTasksPage() {
@@ -21,6 +22,7 @@ export default function AdminTasksPage() {
   const [editForm, setEditForm] = useState({ title: '', description: '', points: 0 })
   const [saving, setSaving] = useState(false)
   const [toggling, setToggling] = useState<number | null>(null)
+  const [closing, setClosing] = useState<number | null>(null)
 
   useEffect(() => {
     fetchTasks()
@@ -87,6 +89,23 @@ export default function AdminTasksPage() {
       alert(err.message)
     } finally {
       setToggling(null)
+    }
+  }
+
+  async function toggleClosed(task: Task) {
+    setClosing(task.day)
+    try {
+      const res = await fetch(`/api/tasks/${task.day}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ isClosed: !task.isClosed }),
+      })
+      if (!res.ok) throw new Error('Failed to toggle')
+      await fetchTasks()
+    } catch (err: any) {
+      alert(err.message)
+    } finally {
+      setClosing(null)
     }
   }
 
@@ -178,24 +197,46 @@ export default function AdminTasksPage() {
                 <h3 className="font-bold text-gray-900 mb-1">{task.title}</h3>
                 <p className="text-sm text-gray-500 mb-3 line-clamp-2">{task.description}</p>
 
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-2">
                   {/* isOpen Toggle */}
-                  <button
-                    onClick={() => toggleOpen(task)}
-                    disabled={toggling === task.day}
-                    className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${
-                      task.isOpen ? 'bg-green-500' : 'bg-gray-300'
-                    } ${toggling === task.day ? 'opacity-50' : ''}`}
-                  >
-                    <span
-                      className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
-                        task.isOpen ? 'translate-x-8' : 'translate-x-1'
-                      }`}
-                    />
-                  </button>
-                  <span className={`text-xs font-medium ${task.isOpen ? 'text-green-600' : 'text-gray-400'}`}>
-                    {task.isOpen ? '已開放' : '未開放'}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => toggleOpen(task)}
+                      disabled={toggling === task.day}
+                      className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${
+                        task.isOpen ? 'bg-green-500' : 'bg-gray-300'
+                      } ${toggling === task.day ? 'opacity-50' : ''}`}
+                    >
+                      <span
+                        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                          task.isOpen ? 'translate-x-8' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                    <span className={`text-xs font-medium ${task.isOpen ? 'text-green-600' : 'text-gray-400'}`}>
+                      {task.isOpen ? '開放' : '未開放'}
+                    </span>
+                  </div>
+
+                  {/* isClosed Toggle */}
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => toggleClosed(task)}
+                      disabled={closing === task.day}
+                      className={`relative inline-flex h-7 w-14 items-center rounded-full transition-colors ${
+                        task.isClosed ? 'bg-orange-500' : 'bg-gray-300'
+                      } ${closing === task.day ? 'opacity-50' : ''}`}
+                    >
+                      <span
+                        className={`inline-block h-5 w-5 transform rounded-full bg-white shadow transition-transform ${
+                          task.isClosed ? 'translate-x-8' : 'translate-x-1'
+                        }`}
+                      />
+                    </button>
+                    <span className={`text-xs font-medium ${task.isClosed ? 'text-orange-600' : 'text-gray-400'}`}>
+                      {task.isClosed ? '已截止' : '未截止'}
+                    </span>
+                  </div>
 
                   <button
                     onClick={() => startEditing(task)}

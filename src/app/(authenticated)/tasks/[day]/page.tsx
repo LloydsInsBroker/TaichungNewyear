@@ -19,6 +19,7 @@ interface TaskDetail {
   taskConfig: Record<string, unknown> | null
   points: number
   isOpen: boolean
+  isClosed: boolean
   completed: boolean
   completions: TaskCompletion[]
 }
@@ -187,7 +188,18 @@ export default function TaskDayPage() {
           </div>
         )}
 
-        {!task.completed && !result && (
+        {task.isClosed && !task.completed && (
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 text-center">
+            <div className="w-10 h-10 bg-orange-400 rounded-full flex items-center justify-center mx-auto mb-2">
+              <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <p className="text-orange-700 font-bold">此任務已截止</p>
+          </div>
+        )}
+
+        {!task.completed && !task.isClosed && !result && (
           <>
             {/* CHECK_IN / MINI_GAME */}
             {(task.taskType === 'CHECK_IN' || task.taskType === 'MINI_GAME') && (

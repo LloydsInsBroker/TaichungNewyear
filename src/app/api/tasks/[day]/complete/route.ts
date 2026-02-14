@@ -27,6 +27,10 @@ export async function POST(
     return NextResponse.json({ error: '此任務尚未開放' }, { status: 403 })
   }
 
+  if (task.isClosed) {
+    return NextResponse.json({ error: '此任務已截止' }, { status: 403 })
+  }
+
   const existing = await prisma.taskCompletion.findUnique({
     where: { userId_taskId: { userId: user!.id, taskId: task.id } },
   })

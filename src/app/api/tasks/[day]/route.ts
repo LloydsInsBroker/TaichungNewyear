@@ -61,12 +61,13 @@ export async function PUT(
   }
 
   const body = await request.json()
-  const { title, description, points, taskConfig, isOpen } = body as {
+  const { title, description, points, taskConfig, isOpen, isClosed } = body as {
     title?: string
     description?: string
     points?: number
     taskConfig?: unknown
     isOpen?: boolean
+    isClosed?: boolean
   }
 
   const existing = await prisma.dailyTask.findUnique({ where: { day } })
@@ -82,6 +83,7 @@ export async function PUT(
       ...(points !== undefined && { points }),
       ...(taskConfig !== undefined && { taskConfig: taskConfig as any }),
       ...(isOpen !== undefined && { isOpen }),
+      ...(isClosed !== undefined && { isClosed }),
     },
   })
 

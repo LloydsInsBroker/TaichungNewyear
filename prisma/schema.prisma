@@ -59,6 +59,7 @@ model DailyTask {
   taskConfig  Json?     // type-specific config (quiz options, etc.)
   points      Int       @default(2)
   isOpen      Boolean   @default(false) // admin controls task availability
+  isClosed    Boolean   @default(false) // admin marks task as ended (view-only)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 

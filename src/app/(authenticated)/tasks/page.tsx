@@ -12,6 +12,7 @@ interface Task {
   taskType: string
   points: number
   isOpen: boolean
+  isClosed: boolean
   completed: boolean
 }
 
@@ -99,6 +100,41 @@ export default function TasksPage() {
                   <span className="text-sm font-bold">+{task.points}</span>
                   <span className="text-xs block">分</span>
                 </div>
+              </button>
+            )
+          }
+
+          if (task.isClosed) {
+            return (
+              <button
+                key={task.id}
+                onClick={() => router.push(`/tasks/${task.day}`)}
+                className="relative w-full flex items-center gap-4 p-4 rounded-xl border-2 border-gray-200 bg-gray-50 shadow-sm transition-all duration-200 text-left"
+              >
+                <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center bg-gray-300 text-white">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-200 text-gray-600">
+                      Day {task.day}
+                    </span>
+                    <span className="text-xs text-gray-400">{formatDate(task.date)}</span>
+                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-orange-100 text-orange-600">
+                      已截止
+                    </span>
+                  </div>
+                  <h3 className="font-bold mt-1 truncate text-gray-500">{task.title}</h3>
+                </div>
+                <div className="flex-shrink-0 text-right text-gray-400">
+                  <span className="text-sm font-bold">+{task.points}</span>
+                  <span className="text-xs block">分</span>
+                </div>
+                <svg className="w-5 h-5 text-gray-300 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                </svg>
               </button>
             )
           }
