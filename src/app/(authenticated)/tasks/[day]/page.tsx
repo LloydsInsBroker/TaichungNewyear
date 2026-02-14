@@ -43,7 +43,7 @@ export default function TaskDayPage() {
   const [result, setResult] = useState<CompletionResult | null>(null)
 
   // Quiz / text state
-  const [selectedOption, setSelectedOption] = useState('')
+  const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [textAnswer, setTextAnswer] = useState('')
 
   useEffect(() => {
@@ -224,7 +224,7 @@ export default function TaskDayPage() {
                     <label
                       key={idx}
                       className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-colors ${
-                        selectedOption === option
+                        selectedOption === idx
                           ? 'border-lucky-red bg-lucky-red-50'
                           : 'border-gray-200 hover:border-imperial-gold-200'
                       }`}
@@ -232,9 +232,9 @@ export default function TaskDayPage() {
                       <input
                         type="radio"
                         name="quiz"
-                        value={option}
-                        checked={selectedOption === option}
-                        onChange={() => setSelectedOption(option)}
+                        value={idx}
+                        checked={selectedOption === idx}
+                        onChange={() => setSelectedOption(idx)}
                         className="accent-lucky-red w-4 h-4"
                       />
                       <span className="text-sm">{option}</span>
@@ -243,7 +243,7 @@ export default function TaskDayPage() {
                 </div>
                 <button
                   onClick={handleSubmit}
-                  disabled={submitting || !selectedOption}
+                  disabled={submitting || selectedOption === null}
                   className="cny-btn-primary w-full"
                 >
                   {submitting ? (
