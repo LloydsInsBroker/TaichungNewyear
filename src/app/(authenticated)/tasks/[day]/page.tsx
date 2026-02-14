@@ -3,6 +3,12 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 
+interface TaskCompletion {
+  displayName: string
+  pictureUrl: string | null
+  completedAt: string
+}
+
 interface TaskDetail {
   id: string
   day: number
@@ -14,6 +20,7 @@ interface TaskDetail {
   points: number
   isOpen: boolean
   completed: boolean
+  completions: TaskCompletion[]
 }
 
 interface CompletionResult {
@@ -75,7 +82,9 @@ export default function TaskDayPage() {
         return
       }
       setResult(data)
-      setTask((prev) => (prev ? { ...prev, completed: true } : prev))
+      // Re-fetch task to update completions list
+      const updated = await fetch(`/api/tasks/${day}`).then((r) => r.json())
+      setTask(updated)
     } catch {
       setSubmitError('Network error')
     } finally {
@@ -273,6 +282,48 @@ export default function TaskDayPage() {
               <p className="text-red-500 text-sm text-center mt-3">{submitError}</p>
             )}
           </>
+        )}
+      </div>
+
+      {/* Completion list */}
+      <div className="cny-card p-5 mt-4">
+        <h3 className="font-bold text-cny-dark mb-3">
+          已完成 ({task.completions.length}人)
+        </h3>
+        {task.completions.length === 0 ? (
+          <p className="text-gray-400 text-sm text-center py-4">尚無人完成</p>
+        ) : (
+          <ul className="space-y-3">
+            {task.completions.map((c, idx) => (
+              <li key={idx} className="flex items-center gap-3">
+                {c.pictureUrl ? (
+                  <img
+                    src={c.pictureUrl}
+                    alt={c.displayName}
+                    className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-imperial-gold-100 flex items-center justify-center flex-shrink-0">
+                    <span className="text-imperial-gold-600 text-xs font-bold">
+                      {c.displayName.charAt(0)}
+                    </span>
+                  </div>
+                )}
+                <span className="text-sm font-medium text-cny-dark truncate">
+                  {c.displayName}
+                </span>
+                <span className="text-xs text-gray-400 ml-auto flex-shrink-0">
+                  {new Date(c.completedAt).toLocaleString('zh-TW', {
+                    month: 'numeric',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </span>
+              </li>
+            ))}
+          </ul>
         )}
       </div>
     </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 
 interface PhotoUser {
   displayName: string
@@ -12,6 +12,14 @@ interface Photo {
   imageUrl: string
   gcsKey: string
   caption: string | null
+  createdAt: string
+  user: PhotoUser
+  _count: { comments: number }
+}
+
+interface Comment {
+  id: string
+  text: string
   createdAt: string
   user: PhotoUser
 }
@@ -46,9 +54,45 @@ export default function PhotosPage() {
   const [viewPhoto, setViewPhoto] = useState<Photo | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Comment state
+  const [comments, setComments] = useState<Comment[]>([])
+  const [commentsLoading, setCommentsLoading] = useState(false)
+  const [newComment, setNewComment] = useState('')
+  const [submittingComment, setSubmittingComment] = useState(false)
+  const commentsEndRef = useRef<HTMLDivElement>(null)
+
   useEffect(() => {
     fetchPhotos(page)
   }, [page])
+
+  const fetchComments = useCallback(async (photoId: string) => {
+    setCommentsLoading(true)
+    try {
+      const res = await fetch(`/api/photos/${photoId}/comments`)
+      if (!res.ok) throw new Error()
+      const data = await res.json()
+      setComments(data.comments)
+    } catch {
+      setComments([])
+    } finally {
+      setCommentsLoading(false)
+    }
+  }, [])
+
+  // Fetch comments when lightbox opens
+  useEffect(() => {
+    if (viewPhoto) {
+      fetchComments(viewPhoto.id)
+      setNewComment('')
+    } else {
+      setComments([])
+    }
+  }, [viewPhoto, fetchComments])
+
+  // Scroll to bottom when new comments appear
+  useEffect(() => {
+    commentsEndRef.current?.scrollIntoView({ behavior: 'smooth' })
+  }, [comments])
 
   async function fetchPhotos(p: number) {
     setLoading(true)
@@ -63,6 +107,38 @@ export default function PhotosPage() {
       setErrorMsg('載入照片失敗')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleSubmitComment() {
+    if (!viewPhoto || !newComment.trim() || submittingComment) return
+    setSubmittingComment(true)
+    try {
+      const res = await fetch(`/api/photos/${viewPhoto.id}/comments`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: newComment.trim() }),
+      })
+      if (!res.ok) throw new Error()
+      const data = await res.json()
+      // Optimistic append
+      setComments((prev) => [...prev, data.comment])
+      setNewComment('')
+      // Update _count in photos list and viewPhoto
+      setPhotos((prev) =>
+        prev.map((p) =>
+          p.id === viewPhoto.id
+            ? { ...p, _count: { comments: p._count.comments + 1 } }
+            : p,
+        ),
+      )
+      setViewPhoto((prev) =>
+        prev ? { ...prev, _count: { comments: prev._count.comments + 1 } } : prev,
+      )
+    } catch {
+      // silently fail for small team app
+    } finally {
+      setSubmittingComment(false)
     }
   }
 
@@ -320,10 +396,20 @@ export default function PhotosPage() {
                       </p>
                     )}
 
-                    {/* Time */}
-                    <p className="text-[10px] text-gray-400 mt-1 px-1">
-                      {timeAgo(photo.createdAt)}
-                    </p>
+                    {/* Time & Comment count */}
+                    <div className="flex items-center justify-between mt-1 px-1">
+                      <p className="text-[10px] text-gray-400">
+                        {timeAgo(photo.createdAt)}
+                      </p>
+                      {photo._count.comments > 0 && (
+                        <div className="flex items-center gap-0.5 text-[10px] text-imperial-gold-500">
+                          <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                          </svg>
+                          <span>{photo._count.comments}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
 
                   {/* Avatar - overlapping top-right of the photo card */}
@@ -393,7 +479,7 @@ export default function PhotosPage() {
           onClick={() => setViewPhoto(null)}
         >
           <div
-            className="relative bg-white rounded-2xl overflow-hidden max-w-lg w-full shadow-2xl animate-bounce-in"
+            className="relative bg-white rounded-2xl overflow-hidden max-w-lg w-full shadow-2xl animate-bounce-in max-h-[90vh] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
@@ -407,42 +493,124 @@ export default function PhotosPage() {
             </button>
 
             {/* Photo */}
-            <div className="w-full">
+            <div className="w-full shrink-0">
               <img
                 src={viewPhoto.imageUrl}
                 alt={viewPhoto.caption || '照片'}
-                className="w-full max-h-[60vh] object-contain bg-gray-100"
+                className="w-full max-h-[40vh] object-contain bg-gray-100"
               />
             </div>
 
-            {/* Info */}
-            <div className="p-4">
-              <div className="flex items-center gap-3">
-                {viewPhoto.user.pictureUrl ? (
-                  <img
-                    src={viewPhoto.user.pictureUrl}
-                    alt={viewPhoto.user.displayName}
-                    className="w-10 h-10 rounded-full border-2 border-lucky-red-200 object-cover"
-                  />
-                ) : (
-                  <div className="w-10 h-10 rounded-full border-2 border-lucky-red-200 bg-gradient-to-br from-lucky-red to-lucky-red-700 flex items-center justify-center">
-                    <span className="text-white font-bold">
-                      {viewPhoto.user.displayName.charAt(0)}
-                    </span>
+            {/* Info + Comments - scrollable */}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              <div className="p-4">
+                <div className="flex items-center gap-3">
+                  {viewPhoto.user.pictureUrl ? (
+                    <img
+                      src={viewPhoto.user.pictureUrl}
+                      alt={viewPhoto.user.displayName}
+                      className="w-10 h-10 rounded-full border-2 border-lucky-red-200 object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full border-2 border-lucky-red-200 bg-gradient-to-br from-lucky-red to-lucky-red-700 flex items-center justify-center">
+                      <span className="text-white font-bold">
+                        {viewPhoto.user.displayName.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-cny-dark truncate">
+                      {viewPhoto.user.displayName}
+                    </p>
+                    <p className="text-xs text-gray-400">{timeAgo(viewPhoto.createdAt)}</p>
                   </div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-cny-dark truncate">
-                    {viewPhoto.user.displayName}
+                </div>
+                {viewPhoto.caption && (
+                  <p className="text-sm text-gray-600 mt-3 leading-relaxed">
+                    {viewPhoto.caption}
                   </p>
-                  <p className="text-xs text-gray-400">{timeAgo(viewPhoto.createdAt)}</p>
+                )}
+
+                {/* Comments Section */}
+                <div className="mt-4 border-t border-gray-100 pt-3">
+                  <p className="text-xs font-bold text-imperial-gold-600 mb-2">
+                    留言 {viewPhoto._count.comments > 0 && `(${viewPhoto._count.comments})`}
+                  </p>
+
+                  {commentsLoading ? (
+                    <div className="flex justify-center py-4">
+                      <div className="w-5 h-5 border-2 border-lucky-red border-t-transparent rounded-full animate-spin" />
+                    </div>
+                  ) : comments.length === 0 ? (
+                    <p className="text-xs text-gray-400 text-center py-3">還沒有留言，來說點什麼吧！</p>
+                  ) : (
+                    <div className="space-y-3 max-h-40 overflow-y-auto pr-1">
+                      {comments.map((c) => (
+                        <div key={c.id} className="flex gap-2">
+                          {c.user.pictureUrl ? (
+                            <img
+                              src={c.user.pictureUrl}
+                              alt={c.user.displayName}
+                              className="w-7 h-7 rounded-full border border-gray-200 object-cover shrink-0 mt-0.5"
+                            />
+                          ) : (
+                            <div className="w-7 h-7 rounded-full border border-gray-200 bg-gradient-to-br from-lucky-red to-lucky-red-700 flex items-center justify-center shrink-0 mt-0.5">
+                              <span className="text-white text-[10px] font-bold">
+                                {c.user.displayName.charAt(0)}
+                              </span>
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-baseline gap-2">
+                              <span className="text-xs font-bold text-cny-dark truncate">
+                                {c.user.displayName}
+                              </span>
+                              <span className="text-[10px] text-gray-400 shrink-0">
+                                {timeAgo(c.createdAt)}
+                              </span>
+                            </div>
+                            <p className="text-sm text-gray-700 break-words leading-relaxed">
+                              {c.text}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                      <div ref={commentsEndRef} />
+                    </div>
+                  )}
                 </div>
               </div>
-              {viewPhoto.caption && (
-                <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-                  {viewPhoto.caption}
-                </p>
-              )}
+            </div>
+
+            {/* Comment Input - fixed at bottom */}
+            <div className="shrink-0 border-t border-gray-100 p-3 flex gap-2">
+              <input
+                type="text"
+                placeholder="留個言吧..."
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                    e.preventDefault()
+                    handleSubmitComment()
+                  }
+                }}
+                maxLength={500}
+                className="flex-1 border border-gray-200 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-lucky-red-300 transition-colors"
+              />
+              <button
+                onClick={handleSubmitComment}
+                disabled={!newComment.trim() || submittingComment}
+                className="shrink-0 w-9 h-9 rounded-full cny-gradient flex items-center justify-center text-white disabled:opacity-40 transition-opacity"
+              >
+                {submittingComment ? (
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                )}
+              </button>
             </div>
           </div>
         </div>

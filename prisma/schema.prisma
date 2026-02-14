@@ -46,6 +46,7 @@ model User {
   photoUploads     PhotoUpload[]
   pointTransactions PointTransaction[]
   lotteryTickets   LotteryTicket[]
+  photoComments    PhotoComment[]
 }
 
 model DailyTask {
@@ -86,6 +87,20 @@ model PhotoUpload {
   createdAt   DateTime  @default(now())
 
   user        User      @relation(fields: [userId], references: [id])
+  comments    PhotoComment[]
+}
+
+model PhotoComment {
+  id        String   @id @default(cuid())
+  photoId   String
+  userId    String
+  text      String
+  createdAt DateTime @default(now())
+
+  photo     PhotoUpload @relation(fields: [photoId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id])
+
+  @@index([photoId, createdAt])
 }
 
 model PointTransaction {

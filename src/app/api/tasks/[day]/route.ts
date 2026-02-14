@@ -19,8 +19,12 @@ export async function GET(
     where: { day },
     include: {
       completions: {
-        where: { userId: user!.id },
-        select: { completedAt: true },
+        include: {
+          user: {
+            select: { displayName: true, pictureUrl: true },
+          },
+        },
+        orderBy: { completedAt: 'asc' },
       },
     },
   })
@@ -30,10 +34,16 @@ export async function GET(
   }
 
   const { completions, ...taskData } = task
+  const myCompletion = completions.find((c) => c.userId === user!.id)
   return NextResponse.json({
     ...taskData,
-    completed: completions.length > 0,
-    completedAt: completions[0]?.completedAt?.toISOString(),
+    completed: !!myCompletion,
+    completedAt: myCompletion?.completedAt?.toISOString(),
+    completions: completions.map((c) => ({
+      displayName: c.user.displayName,
+      pictureUrl: c.user.pictureUrl,
+      completedAt: c.completedAt.toISOString(),
+    })),
   })
 }
 
@@ -51,11 +61,12 @@ export async function PUT(
   }
 
   const body = await request.json()
-  const { title, description, points, taskConfig } = body as {
+  const { title, description, points, taskConfig, isOpen } = body as {
     title?: string
     description?: string
     points?: number
     taskConfig?: unknown
+    isOpen?: boolean
   }
 
   const existing = await prisma.dailyTask.findUnique({ where: { day } })
@@ -70,6 +81,7 @@ export async function PUT(
       ...(description !== undefined && { description }),
       ...(points !== undefined && { points }),
       ...(taskConfig !== undefined && { taskConfig: taskConfig as any }),
+      ...(isOpen !== undefined && { isOpen }),
     },
   })
 

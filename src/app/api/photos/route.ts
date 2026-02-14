@@ -77,6 +77,9 @@ export async function GET(request: NextRequest) {
               pictureUrl: true,
             },
           },
+          _count: {
+            select: { comments: true },
+          },
         },
       }),
       prisma.photoUpload.count(),
