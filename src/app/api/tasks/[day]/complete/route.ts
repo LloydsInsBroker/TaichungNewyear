@@ -43,7 +43,7 @@ export async function POST(
 
   if (task.taskType === 'QUIZ') {
     const correctAnswer = config?.correctAnswer
-    if (!body.answer || body.answer !== correctAnswer) {
+    if (body.answer == null || body.answer !== correctAnswer) {
       return NextResponse.json({ error: 'Incorrect answer' }, { status: 400 })
     }
   }
