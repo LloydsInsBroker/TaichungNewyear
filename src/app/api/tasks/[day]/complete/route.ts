@@ -62,7 +62,7 @@ export async function POST(
     data: {
       userId: user!.id,
       taskId: task.id,
-      answer: body.answer ?? null,
+      answer: body.answer != null ? String(body.answer) : null,
     },
   })
 
