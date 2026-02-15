@@ -7,6 +7,7 @@ interface TaskCompletion {
   displayName: string
   pictureUrl: string | null
   completedAt: string
+  answer?: string
 }
 
 interface TaskDetail {
@@ -308,32 +309,39 @@ export default function TaskDayPage() {
         ) : (
           <ul className="space-y-3">
             {task.completions.map((c, idx) => (
-              <li key={idx} className="flex items-center gap-3">
-                {c.pictureUrl ? (
-                  <img
-                    src={c.pictureUrl}
-                    alt={c.displayName}
-                    className="w-8 h-8 rounded-full object-cover flex-shrink-0"
-                    referrerPolicy="no-referrer"
-                  />
-                ) : (
-                  <div className="w-8 h-8 rounded-full bg-imperial-gold-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-imperial-gold-600 text-xs font-bold">
-                      {c.displayName.charAt(0)}
-                    </span>
-                  </div>
+              <li key={idx} className="flex flex-col gap-1">
+                <div className="flex items-center gap-3">
+                  {c.pictureUrl ? (
+                    <img
+                      src={c.pictureUrl}
+                      alt={c.displayName}
+                      className="w-8 h-8 rounded-full object-cover flex-shrink-0"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-imperial-gold-100 flex items-center justify-center flex-shrink-0">
+                      <span className="text-imperial-gold-600 text-xs font-bold">
+                        {c.displayName.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                  <span className="text-sm font-medium text-cny-dark truncate">
+                    {c.displayName}
+                  </span>
+                  <span className="text-xs text-gray-400 ml-auto flex-shrink-0">
+                    {new Date(c.completedAt).toLocaleString('zh-TW', {
+                      month: 'numeric',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+                {task.taskType === 'TEXT_ANSWER' && c.answer && (
+                  <p className="text-xs text-gray-500 ml-11 before:content-['\u201C'] after:content-['\u201D']">
+                    {c.answer}
+                  </p>
                 )}
-                <span className="text-sm font-medium text-cny-dark truncate">
-                  {c.displayName}
-                </span>
-                <span className="text-xs text-gray-400 ml-auto flex-shrink-0">
-                  {new Date(c.completedAt).toLocaleString('zh-TW', {
-                    month: 'numeric',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                  })}
-                </span>
               </li>
             ))}
           </ul>

@@ -43,6 +43,7 @@ export async function GET(
       displayName: c.user.displayName,
       pictureUrl: c.user.pictureUrl,
       completedAt: c.completedAt.toISOString(),
+      ...(task.taskType === 'TEXT_ANSWER' && { answer: c.answer }),
     })),
   })
 }
