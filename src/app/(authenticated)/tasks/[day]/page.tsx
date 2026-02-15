@@ -338,8 +338,8 @@ export default function TaskDayPage() {
                   </span>
                 </div>
                 {task.taskType === 'TEXT_ANSWER' && c.answer && (
-                  <p className="text-xs text-gray-500 ml-11 before:content-['\u201C'] after:content-['\u201D']">
-                    {c.answer}
+                  <p className="text-xs text-gray-500 ml-11">
+                    &ldquo;{c.answer}&rdquo;
                   </p>
                 )}
               </li>
