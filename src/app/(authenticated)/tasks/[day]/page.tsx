@@ -132,6 +132,7 @@ export default function TaskDayPage() {
   const quizOptions = (config?.options as string[]) ?? []
   const quizQuestion = (config?.question as string) ?? ''
   const minLength = (config?.minLength as number) ?? 1
+  const textPlaceholder = (config?.placeholder as string) ?? '請輸入你的回答...'
 
   return (
     <div>
@@ -264,7 +265,7 @@ export default function TaskDayPage() {
                 <textarea
                   value={textAnswer}
                   onChange={(e) => setTextAnswer(e.target.value)}
-                  placeholder="請輸入你的回答..."
+                  placeholder={textPlaceholder}
                   rows={4}
                   className="w-full border-2 border-imperial-gold-200 rounded-lg p-3 text-sm focus:outline-none focus:border-lucky-red transition-colors resize-none"
                 />

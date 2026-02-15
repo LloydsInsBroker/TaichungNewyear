@@ -47,6 +47,7 @@ model User {
   pointTransactions PointTransaction[]
   lotteryTickets   LotteryTicket[]
   photoComments    PhotoComment[]
+  notifications    Notification[]
 }
 
 model DailyTask {
@@ -126,6 +127,20 @@ model LotteryTicket {
 
   user         User         @relation(fields: [userId], references: [id])
   prize        Prize?       @relation(fields: [prizeId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   @default("PHOTO_COMMENT")
+  message   String
+  photoId   String?
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead, createdAt])
 }
 
 model Prize {

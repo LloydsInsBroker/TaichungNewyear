@@ -61,5 +61,22 @@ export async function POST(
     },
   })
 
+  // Create notification for the photo uploader (if commenter !== uploader)
+  const photo = await prisma.photoUpload.findUnique({
+    where: { id: photoId },
+    select: { userId: true },
+  })
+
+  if (photo && photo.userId !== user!.id) {
+    await prisma.notification.create({
+      data: {
+        userId: photo.userId,
+        type: 'PHOTO_COMMENT',
+        message: `${comment.user.displayName} 在你的照片留了言`,
+        photoId,
+      },
+    })
+  }
+
   return NextResponse.json({ comment })
 }
