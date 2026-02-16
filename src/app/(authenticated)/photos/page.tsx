@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 interface PhotoUser {
   displayName: string
@@ -40,6 +41,7 @@ const ROTATIONS = [
 ]
 
 export default function PhotosPage() {
+  const searchParams = useSearchParams()
   const [photos, setPhotos] = useState<Photo[]>([])
   const [total, setTotal] = useState(0)
   const [page, setPage] = useState(1)
@@ -64,6 +66,28 @@ export default function PhotosPage() {
   useEffect(() => {
     fetchPhotos(page)
   }, [page])
+
+  // Auto-open lightbox when photoId is in URL
+  useEffect(() => {
+    const photoId = searchParams.get('photoId')
+    if (!photoId) return
+    // Check if already loaded in current page
+    const found = photos.find((p) => p.id === photoId)
+    if (found) {
+      setViewPhoto(found)
+      return
+    }
+    // Fetch single photo if not in current page
+    if (!loading) {
+      fetch(`/api/photos/${photoId}`)
+        .then((res) => {
+          if (!res.ok) throw new Error()
+          return res.json()
+        })
+        .then((photo) => setViewPhoto(photo))
+        .catch(() => {})
+    }
+  }, [searchParams, photos, loading])
 
   const fetchComments = useCallback(async (photoId: string) => {
     setCommentsLoading(true)

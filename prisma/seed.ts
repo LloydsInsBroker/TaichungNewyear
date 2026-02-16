@@ -40,14 +40,10 @@ const tasks: Prisma.DailyTaskCreateInput[] = [
   {
     day: 4,
     date: new Date('2025-02-17'),
-    title: '🏮 元宵猜燈謎',
-    description: '猜猜這個燈謎的答案吧！',
-    taskType: TaskType.QUIZ,
-    taskConfig: {
-      question: '燈謎：「一口咬掉牛尾巴」打一字',
-      options: ['告', '牢', '午', '半'],
-      correctAnswer: 0,
-    },
+    title: '☀️ 與太陽公公合照',
+    description: '大年初一，上傳一張你與太陽公公的合照！象徵新的一年業績蒸蒸日上！',
+    taskType: TaskType.PHOTO_UPLOAD,
+    taskConfig: Prisma.JsonNull,
     points: 2,
   },
   {

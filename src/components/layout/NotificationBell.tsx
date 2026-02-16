@@ -74,7 +74,7 @@ export default function NotificationBell() {
   function handleNotificationClick(notification: Notification) {
     setIsOpen(false)
     if (notification.photoId) {
-      router.push('/photos')
+      router.push(`/photos?photoId=${notification.photoId}`)
     }
   }
 
