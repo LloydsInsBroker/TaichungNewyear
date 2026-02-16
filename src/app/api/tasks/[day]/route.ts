@@ -33,17 +33,19 @@ export async function GET(
     return NextResponse.json({ error: 'Task not found' }, { status: 404 })
   }
 
+  const isDev = process.env.NODE_ENV === 'development'
   const { completions, ...taskData } = task
   const myCompletion = completions.find((c) => c.userId === user!.id)
   return NextResponse.json({
     ...taskData,
+    ...(isDev && { isOpen: true, isClosed: false }),
     completed: !!myCompletion,
     completedAt: myCompletion?.completedAt?.toISOString(),
     completions: completions.map((c) => ({
       displayName: c.user.displayName,
       pictureUrl: c.user.pictureUrl,
       completedAt: c.completedAt.toISOString(),
-      ...(task.taskType === 'TEXT_ANSWER' && { answer: c.answer }),
+      ...((task.taskType === 'TEXT_ANSWER' || task.taskType === 'PHOTO_UPLOAD') && { answer: c.answer }),
     })),
   })
 }

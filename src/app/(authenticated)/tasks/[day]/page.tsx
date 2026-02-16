@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
+import ScratchCard from '@/components/ScratchCard'
 
 interface TaskCompletion {
   displayName: string
@@ -16,7 +17,7 @@ interface TaskDetail {
   date: string
   title: string
   description: string
-  taskType: 'CHECK_IN' | 'QUIZ' | 'TEXT_ANSWER' | 'MINI_GAME'
+  taskType: 'CHECK_IN' | 'QUIZ' | 'TEXT_ANSWER' | 'MINI_GAME' | 'PHOTO_UPLOAD'
   taskConfig: Record<string, unknown> | null
   points: number
   isOpen: boolean
@@ -47,6 +48,27 @@ export default function TaskDayPage() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [textAnswer, setTextAnswer] = useState('')
 
+  // Scratch card state
+  const [scratchCard, setScratchCard] = useState<{
+    hasCard: boolean
+    isScratched?: boolean
+    isWinner?: boolean
+    prizeName?: string | null
+  } | null>(null)
+
+  // Photo upload state
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const fetchScratchCard = useCallback(() => {
+    fetch(`/api/tasks/${day}/scratch-card`)
+      .then((res) => res.ok ? res.json() : null)
+      .then((data) => { if (data) setScratchCard(data) })
+      .catch(() => {})
+  }, [day])
+
   useEffect(() => {
     if (isNaN(day)) {
       setError('Invalid day')
@@ -58,10 +80,69 @@ export default function TaskDayPage() {
         if (!res.ok) throw new Error('Failed to load task')
         return res.json()
       })
-      .then((data) => setTask(data))
+      .then((data) => {
+        setTask(data)
+        if (data.completed && data.isClosed) {
+          fetchScratchCard()
+        }
+      })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
-  }, [day])
+  }, [day, fetchScratchCard])
+
+  function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setSelectedFile(file)
+    const reader = new FileReader()
+    reader.onload = (ev) => setPhotoPreview(ev.target?.result as string)
+    reader.readAsDataURL(file)
+  }
+
+  async function handlePhotoSubmit() {
+    if (!task || !selectedFile || uploading) return
+    setUploading(true)
+    setSubmitError('')
+
+    try {
+      // 1. Get signed upload URL
+      const urlRes = await fetch('/api/photos/upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: selectedFile.name, contentType: selectedFile.type }),
+      })
+      if (!urlRes.ok) throw new Error('Failed to get upload URL')
+      const { uploadUrl, gcsKey } = await urlRes.json()
+
+      // 2. Upload to GCS
+      const uploadRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': selectedFile.type },
+        body: selectedFile,
+      })
+      if (!uploadRes.ok) throw new Error('Failed to upload photo')
+
+      // 3. Build proxy URL and complete task
+      const proxyUrl = `/api/photos/serve/${btoa(gcsKey)}`
+      const res = await fetch(`/api/tasks/${day}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answer: proxyUrl }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setSubmitError(data.error || 'Submission failed')
+        return
+      }
+      setResult(data)
+      const updated = await fetch(`/api/tasks/${day}`).then((r) => r.json())
+      setTask(updated)
+    } catch {
+      setSubmitError('上傳失敗，請重試')
+    } finally {
+      setUploading(false)
+    }
+  }
 
   async function handleSubmit() {
     if (!task || submitting) return
@@ -169,6 +250,23 @@ export default function TaskDayPage() {
             </div>
             <p className="text-green-700 font-bold">已完成</p>
           </div>
+        )}
+
+        {task.completed && task.isClosed && scratchCard?.hasCard && (
+          <ScratchCard
+            day={day}
+            hasCard={scratchCard.hasCard}
+            isScratched={scratchCard.isScratched ?? false}
+            isWinner={scratchCard.isWinner}
+            prizeName={scratchCard.prizeName}
+            onScratch={async () => {
+              const res = await fetch(`/api/tasks/${day}/scratch-card`, { method: 'POST' })
+              const data = await res.json()
+              if (!res.ok) throw new Error(data.error)
+              setScratchCard({ hasCard: true, isScratched: true, isWinner: data.isWinner, prizeName: data.prizeName })
+              return data
+            }}
+          />
         )}
 
         {result && (
@@ -292,6 +390,65 @@ export default function TaskDayPage() {
               </div>
             )}
 
+            {/* PHOTO_UPLOAD */}
+            {task.taskType === 'PHOTO_UPLOAD' && (
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                {!photoPreview ? (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full border-2 border-dashed border-imperial-gold-300 rounded-lg p-8 flex flex-col items-center gap-2 hover:border-lucky-red hover:bg-lucky-red-50 transition-colors"
+                  >
+                    <svg className="w-10 h-10 text-imperial-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+                    </svg>
+                    <span className="text-sm text-imperial-gold-600 font-medium">點擊上傳照片</span>
+                  </button>
+                ) : (
+                  <div className="space-y-3">
+                    <img
+                      src={photoPreview}
+                      alt="預覽"
+                      className="w-full max-h-64 object-contain rounded-lg border border-gray-200"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setSelectedFile(null)
+                          setPhotoPreview(null)
+                          if (fileInputRef.current) fileInputRef.current.value = ''
+                        }}
+                        className="flex-1 py-2 rounded-lg border-2 border-gray-300 text-gray-600 text-sm font-medium hover:bg-gray-50"
+                      >
+                        重新選擇
+                      </button>
+                      <button
+                        onClick={handlePhotoSubmit}
+                        disabled={uploading}
+                        className="flex-1 cny-btn-primary"
+                      >
+                        {uploading ? (
+                          <span className="flex items-center justify-center gap-2">
+                            <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            上傳中...
+                          </span>
+                        ) : (
+                          '提交照片'
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
+
             {submitError && (
               <p className="text-red-500 text-sm text-center mt-3">{submitError}</p>
             )}
@@ -341,6 +498,15 @@ export default function TaskDayPage() {
                   <p className="text-xs text-gray-500 ml-11">
                     &ldquo;{c.answer}&rdquo;
                   </p>
+                )}
+                {task.taskType === 'PHOTO_UPLOAD' && c.answer && (
+                  <div className="ml-11 mt-1">
+                    <img
+                      src={c.answer}
+                      alt={`${c.displayName} 的照片`}
+                      className="w-full max-w-[200px] rounded-lg border border-gray-200"
+                    />
+                  </div>
                 )}
               </li>
             ))}

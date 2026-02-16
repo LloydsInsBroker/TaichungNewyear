@@ -23,6 +23,8 @@ export default function AdminTasksPage() {
   const [saving, setSaving] = useState(false)
   const [toggling, setToggling] = useState<number | null>(null)
   const [closing, setClosing] = useState<number | null>(null)
+  const [scratchStatus, setScratchStatus] = useState<Record<number, { totalCards: number; scratchedCount: number; winner: any; winners?: any[] }>>({})
+  const [generating, setGenerating] = useState<number | null>(null)
 
   useEffect(() => {
     fetchTasks()
@@ -34,10 +36,49 @@ export default function AdminTasksPage() {
       if (!res.ok) throw new Error('Failed to fetch tasks')
       const data = await res.json()
       setTasks(data.tasks)
+      // Fetch scratch card status for closed tasks
+      const closedTasks = (data.tasks as Task[]).filter((t) => t.isClosed)
+      for (const t of closedTasks) {
+        fetchScratchStatus(t.day)
+      }
     } catch (err: any) {
       setError(err.message)
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function fetchScratchStatus(day: number) {
+    try {
+      const res = await fetch(`/api/admin/scratch-cards?taskDay=${day}`)
+      if (!res.ok) return
+      const data = await res.json()
+      setScratchStatus((prev) => ({ ...prev, [day]: data }))
+    } catch {
+      // ignore
+    }
+  }
+
+  async function generateScratchCards(day: number) {
+    if (!confirm(`確定要為 Day ${day} 產生刮刮樂嗎？`)) return
+    setGenerating(day)
+    try {
+      const res = await fetch('/api/admin/scratch-cards', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskDay: day, prizeName: '600元紅包', winnerCount: 1 }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || '產生失敗')
+        return
+      }
+      alert(`已產生 ${data.generated} 張刮刮樂，中獎者 ${data.winners} 位`)
+      fetchScratchStatus(day)
+    } catch {
+      alert('網路錯誤')
+    } finally {
+      setGenerating(null)
     }
   }
 
@@ -245,6 +286,36 @@ export default function AdminTasksPage() {
                     編輯
                   </button>
                 </div>
+
+                {/* Scratch card section for closed tasks */}
+                {task.isClosed && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-bold text-amber-600">刮刮樂加碼</span>
+                    </div>
+                    {scratchStatus[task.day]?.totalCards ? (
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <p>已產生 {scratchStatus[task.day].totalCards} 張 / 已刮 {scratchStatus[task.day].scratchedCount} 張</p>
+                        {scratchStatus[task.day].winner && (
+                          <p className="text-amber-700 font-medium">
+                            中獎者: {scratchStatus[task.day].winner.displayName}
+                            {scratchStatus[task.day].winner.isScratched
+                              ? ` (已刮開 ${new Date(scratchStatus[task.day].winner.scratchedAt).toLocaleString('zh-TW')})`
+                              : ' (尚未刮開)'}
+                          </p>
+                        )}
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => generateScratchCards(task.day)}
+                        disabled={generating === task.day}
+                        className="text-xs bg-amber-500 text-white px-3 py-1.5 rounded hover:bg-amber-600 disabled:opacity-50"
+                      >
+                        {generating === task.day ? '產生中...' : '產生刮刮樂'}
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>

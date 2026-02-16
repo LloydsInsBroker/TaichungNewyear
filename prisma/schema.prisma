@@ -17,6 +17,7 @@ enum TaskType {
   QUIZ
   TEXT_ANSWER
   MINI_GAME
+  PHOTO_UPLOAD
 }
 
 enum PointType {
@@ -48,6 +49,7 @@ model User {
   lotteryTickets   LotteryTicket[]
   photoComments    PhotoComment[]
   notifications    Notification[]
+  scratchCards     ScratchCard[]
 }
 
 model DailyTask {
@@ -153,4 +155,20 @@ model Prize {
   createdAt   DateTime @default(now())
 
   tickets     LotteryTicket[]
+}
+
+model ScratchCard {
+  id          String    @id @default(cuid())
+  userId      String
+  taskDay     Int
+  isWinner    Boolean   @default(false)
+  isScratched Boolean   @default(false)
+  prizeName   String?
+  scratchedAt DateTime?
+  createdAt   DateTime  @default(now())
+
+  user        User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, taskDay])
+  @@index([taskDay, isScratched])
 }

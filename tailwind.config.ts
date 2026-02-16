@@ -63,6 +63,10 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-10px)' },
         },
+        'gold-shimmer': {
+          '0%': { backgroundPosition: '200% center' },
+          '100%': { backgroundPosition: '-200% center' },
+        },
       },
       animation: {
         'lantern-swing': 'lantern-swing 3s ease-in-out infinite',
@@ -70,6 +74,7 @@ const config: Config = {
         'sparkle': 'sparkle 2s ease-in-out infinite',
         'bounce-in': 'bounce-in 0.5s ease-out',
         'float': 'float 3s ease-in-out infinite',
+        'gold-shimmer': 'gold-shimmer 2s linear infinite',
       },
     },
   },

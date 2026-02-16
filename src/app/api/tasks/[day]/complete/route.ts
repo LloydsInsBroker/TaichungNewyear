@@ -23,11 +23,12 @@ export async function POST(
     return NextResponse.json({ error: 'Task not found' }, { status: 404 })
   }
 
-  if (!task.isOpen) {
+  const isDev = process.env.NODE_ENV === 'development'
+  if (!isDev && !task.isOpen) {
     return NextResponse.json({ error: '此任務尚未開放' }, { status: 403 })
   }
 
-  if (task.isClosed) {
+  if (!isDev && task.isClosed) {
     return NextResponse.json({ error: '此任務已截止' }, { status: 403 })
   }
 
@@ -55,6 +56,12 @@ export async function POST(
         { error: `Answer must be at least ${minLength} characters` },
         { status: 400 },
       )
+    }
+  }
+
+  if (task.taskType === 'PHOTO_UPLOAD') {
+    if (!body.answer || typeof body.answer !== 'string' || !body.answer.startsWith('/api/photos/serve/')) {
+      return NextResponse.json({ error: 'Please upload a photo' }, { status: 400 })
     }
   }
 

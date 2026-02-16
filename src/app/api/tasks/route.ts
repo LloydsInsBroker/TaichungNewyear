@@ -16,8 +16,10 @@ export async function GET() {
     },
   })
 
+  const isDev = process.env.NODE_ENV === 'development'
   const result = tasks.map(({ completions, ...task }) => ({
     ...task,
+    ...(isDev && { isOpen: true, isClosed: false }),
     completed: completions.length > 0,
     completedAt: completions[0]?.completedAt?.toISOString(),
   }))
