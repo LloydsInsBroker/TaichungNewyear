@@ -67,6 +67,15 @@ const config: Config = {
           '0%': { backgroundPosition: '200% center' },
           '100%': { backgroundPosition: '-200% center' },
         },
+        'slot-scroll': {
+          '0%': { transform: 'translateY(0)' },
+          '100%': { transform: 'translateY(-100%)' },
+        },
+        'firework': {
+          '0%': { transform: 'scale(0)', opacity: '1' },
+          '50%': { transform: 'scale(1.5)', opacity: '0.8' },
+          '100%': { transform: 'scale(2)', opacity: '0' },
+        },
       },
       animation: {
         'lantern-swing': 'lantern-swing 3s ease-in-out infinite',

@@ -56,6 +56,13 @@ export default function TaskDayPage() {
     prizeName?: string | null
   } | null>(null)
 
+  // Bonus draw state
+  const [bonusDraw, setBonusDraw] = useState<{
+    hasDraw: boolean
+    winner?: { displayName: string; pictureUrl: string | null }
+    prizeName?: string
+  } | null>(null)
+
   // Photo upload state
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string | null>(null)
@@ -84,6 +91,12 @@ export default function TaskDayPage() {
         setTask(data)
         if (data.completed && data.isClosed) {
           fetchScratchCard()
+        }
+        if (data.isClosed) {
+          fetch(`/api/tasks/${day}/bonus-draw`)
+            .then((res) => res.ok ? res.json() : null)
+            .then((d) => { if (d) setBonusDraw(d) })
+            .catch(() => {})
         }
       })
       .catch((err) => setError(err.message))
@@ -455,6 +468,36 @@ export default function TaskDayPage() {
           </>
         )}
       </div>
+
+      {/* Bonus draw winner */}
+      {bonusDraw?.hasDraw && bonusDraw.winner && (
+        <div className="cny-card p-4 mt-4 bg-gradient-to-r from-red-50 to-yellow-50 border-red-200">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">🎊</span>
+            <span className="font-bold text-red-700 text-sm">限時加碼得主</span>
+          </div>
+          <div className="flex items-center gap-3">
+            {bonusDraw.winner.pictureUrl ? (
+              <img
+                src={bonusDraw.winner.pictureUrl}
+                alt={bonusDraw.winner.displayName}
+                className="w-10 h-10 rounded-full object-cover border-2 border-yellow-400"
+                referrerPolicy="no-referrer"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center border-2 border-yellow-400">
+                <span className="text-yellow-700 font-bold text-sm">
+                  {bonusDraw.winner.displayName.charAt(0)}
+                </span>
+              </div>
+            )}
+            <div>
+              <span className="font-bold text-cny-dark">{bonusDraw.winner.displayName}</span>
+              <span className="text-gray-500 text-sm ml-2">— {bonusDraw.prizeName}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Completion list */}
       <div className="cny-card p-5 mt-4">

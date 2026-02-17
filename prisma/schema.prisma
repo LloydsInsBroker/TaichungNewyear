@@ -50,6 +50,7 @@ model User {
   photoComments    PhotoComment[]
   notifications    Notification[]
   scratchCards     ScratchCard[]
+  bonusDraws       BonusDraw[]
 }
 
 model DailyTask {
@@ -171,4 +172,14 @@ model ScratchCard {
 
   @@unique([userId, taskDay])
   @@index([taskDay, isScratched])
+}
+
+model BonusDraw {
+  id        String   @id @default(cuid())
+  taskDay   Int      @unique
+  winnerId  String
+  prizeName String
+  createdAt DateTime @default(now())
+
+  winner    User     @relation(fields: [winnerId], references: [id])
 }

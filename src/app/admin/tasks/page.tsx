@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import BonusDrawAnimation from '@/components/BonusDrawAnimation'
 
 interface Task {
   id: string
@@ -25,6 +26,9 @@ export default function AdminTasksPage() {
   const [closing, setClosing] = useState<number | null>(null)
   const [scratchStatus, setScratchStatus] = useState<Record<number, { totalCards: number; scratchedCount: number; winner: any; winners?: any[] }>>({})
   const [generating, setGenerating] = useState<number | null>(null)
+  const [drawStatus, setDrawStatus] = useState<Record<number, { hasDraw: boolean; winner?: any; prizeName?: string; eligibleUsers?: any[] }>>({})
+  const [drawing, setDrawing] = useState<number | null>(null)
+  const [drawAnimation, setDrawAnimation] = useState<{ day: number; users: any[]; winner: any; prizeName: string } | null>(null)
 
   useEffect(() => {
     fetchTasks()
@@ -32,7 +36,7 @@ export default function AdminTasksPage() {
 
   async function fetchTasks() {
     try {
-      const res = await fetch('/api/tasks')
+      const res = await fetch('/api/tasks?admin=1')
       if (!res.ok) throw new Error('Failed to fetch tasks')
       const data = await res.json()
       setTasks(data.tasks)
@@ -40,6 +44,7 @@ export default function AdminTasksPage() {
       const closedTasks = (data.tasks as Task[]).filter((t) => t.isClosed)
       for (const t of closedTasks) {
         fetchScratchStatus(t.day)
+        fetchDrawStatus(t.day)
       }
     } catch (err: any) {
       setError(err.message)
@@ -79,6 +84,66 @@ export default function AdminTasksPage() {
       alert('網路錯誤')
     } finally {
       setGenerating(null)
+    }
+  }
+
+  async function fetchDrawStatus(day: number) {
+    try {
+      const res = await fetch(`/api/admin/bonus-draw?taskDay=${day}`)
+      if (!res.ok) return
+      const data = await res.json()
+      setDrawStatus((prev) => ({ ...prev, [day]: data }))
+    } catch {
+      // ignore
+    }
+  }
+
+  async function startBonusDraw(day: number) {
+    setDrawing(day)
+    try {
+      const res = await fetch('/api/admin/bonus-draw', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskDay: day, prizeName: '600元紅包' }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || '抽獎失敗')
+        return
+      }
+      // Get eligible users for animation
+      const statusRes = await fetch(`/api/admin/bonus-draw?taskDay=${day}`)
+      const statusData = await statusRes.json()
+      setDrawAnimation({
+        day,
+        users: statusData.eligibleUsers || [],
+        winner: data.winner,
+        prizeName: data.prizeName,
+      })
+    } catch {
+      alert('網路錯誤')
+    } finally {
+      setDrawing(null)
+    }
+  }
+
+  async function confirmBonusDraw(day: number, winnerId: string, prizeName: string) {
+    try {
+      const res = await fetch('/api/admin/bonus-draw', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskDay: day, winnerId, prizeName }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || '確認失敗')
+        return
+      }
+      alert('已確認抽獎結果！')
+      setDrawAnimation(null)
+      fetchDrawStatus(day)
+    } catch {
+      alert('網路錯誤')
     }
   }
 
@@ -316,6 +381,30 @@ export default function AdminTasksPage() {
                     )}
                   </div>
                 )}
+
+                {/* Bonus draw section for closed tasks */}
+                {task.isClosed && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-bold text-red-600">🎆 限時加碼抽獎</span>
+                    </div>
+                    {drawStatus[task.day]?.hasDraw ? (
+                      <div className="text-xs text-gray-600 space-y-1">
+                        <p className="text-red-700 font-medium">
+                          已抽獎：{drawStatus[task.day].winner?.displayName} — {drawStatus[task.day].prizeName}
+                        </p>
+                      </div>
+                    ) : (
+                      <button
+                        onClick={() => startBonusDraw(task.day)}
+                        disabled={drawing === task.day}
+                        className="text-xs bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 disabled:opacity-50"
+                      >
+                        {drawing === task.day ? '抽獎中...' : '限時加碼抽獎'}
+                      </button>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -324,6 +413,21 @@ export default function AdminTasksPage() {
 
       {tasks.length === 0 && (
         <div className="text-center py-8 text-gray-500">尚無任務資料</div>
+      )}
+
+      {/* Bonus draw animation overlay */}
+      {drawAnimation && (
+        <BonusDrawAnimation
+          users={drawAnimation.users}
+          winner={drawAnimation.winner}
+          prizeName={drawAnimation.prizeName}
+          onConfirm={() => confirmBonusDraw(drawAnimation.day, drawAnimation.winner.id, drawAnimation.prizeName)}
+          onRedraw={() => {
+            setDrawAnimation(null)
+            startBonusDraw(drawAnimation.day)
+          }}
+          onClose={() => setDrawAnimation(null)}
+        />
       )}
     </div>
   )
