@@ -65,6 +65,20 @@ export async function POST(
     }
   }
 
+  if (task.taskType === 'PHOTO_TEXT') {
+    if (!body.photoUrl || typeof body.photoUrl !== 'string' || !body.photoUrl.startsWith('/api/photos/serve/')) {
+      return NextResponse.json({ error: 'Please upload a photo' }, { status: 400 })
+    }
+    const minLength = (config?.minLength as number) ?? 1
+    if (!body.text || typeof body.text !== 'string' || body.text.trim().length < minLength) {
+      return NextResponse.json(
+        { error: `文字介紹至少需要 ${minLength} 個字` },
+        { status: 400 },
+      )
+    }
+    body.answer = JSON.stringify({ photoUrl: body.photoUrl, text: body.text.trim() })
+  }
+
   const completion = await prisma.taskCompletion.create({
     data: {
       userId: user!.id,

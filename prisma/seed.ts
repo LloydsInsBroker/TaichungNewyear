@@ -49,10 +49,13 @@ const tasks: Prisma.DailyTaskCreateInput[] = [
   {
     day: 5,
     date: new Date('2025-02-18'),
-    title: '📸 分享美食照',
-    description: '今天的任務是簽到！別忘了也可以上傳照片牆賺額外積分喔～',
-    taskType: TaskType.CHECK_IN,
-    taskConfig: Prisma.JsonNull,
+    title: '初二回娘家',
+    description: '上傳一道媽媽的拿手好菜，並且文字介紹為什麼喜歡吃!',
+    taskType: TaskType.PHOTO_TEXT,
+    taskConfig: {
+      minLength: 10,
+      placeholder: '分享為什麼喜歡這道菜...',
+    },
     points: 2,
   },
   {

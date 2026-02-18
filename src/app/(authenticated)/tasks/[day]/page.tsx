@@ -17,7 +17,7 @@ interface TaskDetail {
   date: string
   title: string
   description: string
-  taskType: 'CHECK_IN' | 'QUIZ' | 'TEXT_ANSWER' | 'MINI_GAME' | 'PHOTO_UPLOAD'
+  taskType: 'CHECK_IN' | 'QUIZ' | 'TEXT_ANSWER' | 'MINI_GAME' | 'PHOTO_UPLOAD' | 'PHOTO_TEXT'
   taskConfig: Record<string, unknown> | null
   points: number
   isOpen: boolean
@@ -141,6 +141,54 @@ export default function TaskDayPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ answer: proxyUrl }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setSubmitError(data.error || 'Submission failed')
+        return
+      }
+      setResult(data)
+      const updated = await fetch(`/api/tasks/${day}`).then((r) => r.json())
+      setTask(updated)
+    } catch {
+      setSubmitError('上傳失敗，請重試')
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  async function handlePhotoTextSubmit() {
+    if (!task || !selectedFile || uploading) return
+    const trimmed = textAnswer.trim()
+    const ml = (task.taskConfig as Record<string, unknown> | null)?.minLength as number ?? 1
+    if (trimmed.length < ml) return
+    setUploading(true)
+    setSubmitError('')
+
+    try {
+      // 1. Get signed upload URL
+      const urlRes = await fetch('/api/photos/upload-url', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: selectedFile.name, contentType: selectedFile.type }),
+      })
+      if (!urlRes.ok) throw new Error('Failed to get upload URL')
+      const { uploadUrl, gcsKey } = await urlRes.json()
+
+      // 2. Upload to GCS
+      const uploadRes = await fetch(uploadUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': selectedFile.type },
+        body: selectedFile,
+      })
+      if (!uploadRes.ok) throw new Error('Failed to upload photo')
+
+      // 3. Complete task with photo + text
+      const proxyUrl = `/api/photos/serve/${btoa(gcsKey)}`
+      const res = await fetch(`/api/tasks/${day}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ photoUrl: proxyUrl, text: trimmed }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -462,6 +510,79 @@ export default function TaskDayPage() {
               </div>
             )}
 
+            {/* PHOTO_TEXT */}
+            {task.taskType === 'PHOTO_TEXT' && (
+              <div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                {!photoPreview ? (
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    className="w-full border-2 border-dashed border-imperial-gold-300 rounded-lg p-8 flex flex-col items-center gap-2 hover:border-lucky-red hover:bg-lucky-red-50 transition-colors"
+                  >
+                    <svg className="w-10 h-10 text-imperial-gold-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0z" />
+                    </svg>
+                    <span className="text-sm text-imperial-gold-600 font-medium">點擊上傳照片</span>
+                  </button>
+                ) : (
+                  <div className="space-y-3">
+                    <img
+                      src={photoPreview}
+                      alt="預覽"
+                      className="w-full max-h-64 object-contain rounded-lg border border-gray-200"
+                    />
+                    <button
+                      onClick={() => {
+                        setSelectedFile(null)
+                        setPhotoPreview(null)
+                        if (fileInputRef.current) fileInputRef.current.value = ''
+                      }}
+                      className="text-sm text-gray-500 hover:text-lucky-red underline"
+                    >
+                      重新選擇照片
+                    </button>
+                  </div>
+                )}
+
+                <div className="mt-4">
+                  <textarea
+                    value={textAnswer}
+                    onChange={(e) => setTextAnswer(e.target.value)}
+                    placeholder={textPlaceholder}
+                    rows={4}
+                    className="w-full border-2 border-imperial-gold-200 rounded-lg p-3 text-sm focus:outline-none focus:border-lucky-red transition-colors resize-none"
+                  />
+                  <div className="flex justify-between items-center mt-1 mb-4">
+                    <span className={`text-xs ${textAnswer.trim().length >= minLength ? 'text-green-500' : 'text-gray-400'}`}>
+                      {textAnswer.trim().length}/{minLength} 字 (最少)
+                    </span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={handlePhotoTextSubmit}
+                  disabled={uploading || !selectedFile || textAnswer.trim().length < minLength}
+                  className="cny-btn-primary w-full"
+                >
+                  {uploading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      上傳中...
+                    </span>
+                  ) : (
+                    '提交'
+                  )}
+                </button>
+              </div>
+            )}
+
             {submitError && (
               <p className="text-red-500 text-sm text-center mt-3">{submitError}</p>
             )}
@@ -551,6 +672,25 @@ export default function TaskDayPage() {
                     />
                   </div>
                 )}
+                {task.taskType === 'PHOTO_TEXT' && c.answer && (() => {
+                  try {
+                    const parsed = JSON.parse(c.answer)
+                    return (
+                      <div className="ml-11 mt-1 space-y-1">
+                        <img
+                          src={parsed.photoUrl}
+                          alt={`${c.displayName} 的照片`}
+                          className="w-full max-w-[200px] rounded-lg border border-gray-200"
+                        />
+                        <p className="text-xs text-gray-500">
+                          &ldquo;{parsed.text}&rdquo;
+                        </p>
+                      </div>
+                    )
+                  } catch {
+                    return null
+                  }
+                })()}
               </li>
             ))}
           </ul>
