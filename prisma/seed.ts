@@ -61,18 +61,62 @@ const tasks: Prisma.DailyTaskCreateInput[] = [
   {
     day: 6,
     date: new Date('2025-02-19'),
-    title: '🎯 新年知識王',
-    description: '挑戰新年相關知識問答！',
-    taskType: TaskType.QUIZ,
+    title: '📰 全球財經新聞大挑戰',
+    description: '挑戰 10 題 2025-2026 全球財經時事題，全部答對才能過關！答錯可以重新作答喔～',
+    taskType: TaskType.MULTI_QUIZ,
     taskConfig: {
-      question: '農曆新年的「守歲」是指什麼？',
-      options: [
-        '除夕夜不睡覺等待新年',
-        '過年期間吃素',
-        '大掃除',
-        '拜年',
+      questions: [
+        {
+          question: '2026年2月，美國道瓊工業指數首次突破哪個歷史性里程碑？',
+          options: ['40,000 點', '45,000 點', '50,000 點', '55,000 點'],
+          correctAnswer: 2,
+        },
+        {
+          question: '比特幣在2025年10月創下歷史新高，大約突破多少美元？',
+          options: ['10 萬美元', '12.6 萬美元', '15 萬美元', '20 萬美元'],
+          correctAnswer: 1,
+        },
+        {
+          question: '2026年初，投資人因擔憂美元貶值而大量買入黃金，市場將此現象稱為？',
+          options: ['套利交易（Carry Trade）', '貶值交易（Debasement Trade）', '量化寬鬆交易（QE Trade）', '動能交易（Momentum Trade）'],
+          correctAnswer: 1,
+        },
+        {
+          question: '2026年1月，川普提名誰接替鮑威爾（Jerome Powell）擔任下一任聯準會主席？',
+          options: ['乔恩·泰勒（John Taylor）', '凱文·乔什（Kevin Warsh）', '拉里·薩默斯（Larry Summers）', '珍妮特·葉倫（Janet Yellen）'],
+          correctAnswer: 1,
+        },
+        {
+          question: '2025年美國通過首部加密貨幣重要法案「GENIUS Act」，該法案主要規範的對象是？',
+          options: ['比特幣挖礦', 'NFT 交易', '穩定幣（Stablecoin）', '去中心化交易所'],
+          correctAnswer: 2,
+        },
+        {
+          question: '2025年3月，川普簽署行政命令，宣布建立美國國家級的什麼儲備？',
+          options: ['黃金戰略儲備', '加密貨幣儲備', '稀土戰略儲備', '石油戰略儲備'],
+          correctAnswer: 1,
+        },
+        {
+          question: '2026年1月，美國在哪個國家執行了一項震驚全球的行動，逮捕了該國現任總統？',
+          options: ['古巴', '委內瑞拉', '尼加拉瓜', '玻利維亞'],
+          correctAnswer: 1,
+        },
+        {
+          question: '2026年初，日本國會大選中，自民黨（LDP）在誰的帶領下取得史上最大壓倒性勝利？',
+          options: ['岸田文雄', '石破茂', '高市早苗', '河野太郎'],
+          correctAnswer: 2,
+        },
+        {
+          question: '2025-2026年金融界熱門趨勢「RWA 代幣化」，RWA 是什麼的縮寫？',
+          options: ['Real World Assets（真實世界資產）', 'Risk Weighted Assets（風險加權資產）', 'Regulated Web Applications（受監管網路應用）', 'Remote Work Automation（遠端工作自動化）'],
+          correctAnswer: 0,
+        },
+        {
+          question: '2026年2月6日道瓊首次突破50,000點，當日漲幅最大的個股之一是哪家公司？',
+          options: ['蘋果（Apple）', '微軟（Microsoft）', '輝達（NVIDIA）', '亞馬遜（Amazon）'],
+          correctAnswer: 2,
+        },
       ],
-      correctAnswer: 0,
     },
     points: 2,
   },

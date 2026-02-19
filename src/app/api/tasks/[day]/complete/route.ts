@@ -35,7 +35,7 @@ export async function POST(
   const existing = await prisma.taskCompletion.findUnique({
     where: { userId_taskId: { userId: user!.id, taskId: task.id } },
   })
-  if (existing) {
+  if (existing && task.taskType !== 'MULTI_QUIZ') {
     return NextResponse.json({ error: 'Task already completed' }, { status: 400 })
   }
 
@@ -77,6 +77,28 @@ export async function POST(
       )
     }
     body.answer = JSON.stringify({ photoUrl: body.photoUrl, text: body.text.trim() })
+  }
+
+  if (task.taskType === 'MULTI_QUIZ') {
+    if (existing) {
+      return NextResponse.json({ error: 'Task already completed' }, { status: 400 })
+    }
+    const questions = (config?.questions as Array<{ correctAnswer: number }>) ?? []
+    const answers = body.answers as number[] | undefined
+    if (!Array.isArray(answers) || answers.length !== questions.length) {
+      return NextResponse.json({ error: '請回答所有題目' }, { status: 400 })
+    }
+    const wrongIndices: number[] = []
+    questions.forEach((q, i) => {
+      if (answers[i] !== q.correctAnswer) wrongIndices.push(i)
+    })
+    if (wrongIndices.length > 0) {
+      return NextResponse.json(
+        { error: `答錯了 ${wrongIndices.length} 題，請重新作答！`, wrongIndices },
+        { status: 400 },
+      )
+    }
+    body.answer = JSON.stringify(answers)
   }
 
   const completion = await prisma.taskCompletion.create({

@@ -17,7 +17,7 @@ interface TaskDetail {
   date: string
   title: string
   description: string
-  taskType: 'CHECK_IN' | 'QUIZ' | 'TEXT_ANSWER' | 'MINI_GAME' | 'PHOTO_UPLOAD' | 'PHOTO_TEXT'
+  taskType: 'CHECK_IN' | 'QUIZ' | 'TEXT_ANSWER' | 'MINI_GAME' | 'PHOTO_UPLOAD' | 'PHOTO_TEXT' | 'MULTI_QUIZ'
   taskConfig: Record<string, unknown> | null
   points: number
   isOpen: boolean
@@ -47,6 +47,10 @@ export default function TaskDayPage() {
   // Quiz / text state
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [textAnswer, setTextAnswer] = useState('')
+
+  // Multi-quiz state
+  const [multiAnswers, setMultiAnswers] = useState<(number | null)[]>([])
+  const [wrongIndices, setWrongIndices] = useState<number[]>([])
 
   // Scratch card state
   const [scratchCard, setScratchCard] = useState<{
@@ -205,6 +209,34 @@ export default function TaskDayPage() {
     }
   }
 
+  async function handleMultiQuizSubmit() {
+    if (!task || submitting) return
+    setSubmitting(true)
+    setSubmitError('')
+    setWrongIndices([])
+
+    try {
+      const res = await fetch(`/api/tasks/${day}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answers: multiAnswers }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        if (data.wrongIndices) setWrongIndices(data.wrongIndices)
+        setSubmitError(data.error || 'Submission failed')
+        return
+      }
+      setResult(data)
+      const updated = await fetch(`/api/tasks/${day}`).then((r) => r.json())
+      setTask(updated)
+    } catch {
+      setSubmitError('Network error')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   async function handleSubmit() {
     if (!task || submitting) return
     setSubmitting(true)
@@ -276,6 +308,12 @@ export default function TaskDayPage() {
   const quizQuestion = (config?.question as string) ?? ''
   const minLength = (config?.minLength as number) ?? 1
   const textPlaceholder = (config?.placeholder as string) ?? '請輸入你的回答...'
+  const multiQuestions = (config?.questions as Array<{ question: string; options: string[]; correctAnswer: number }>) ?? []
+
+  // Initialize multiAnswers when questions load
+  if (multiQuestions.length > 0 && multiAnswers.length !== multiQuestions.length) {
+    setMultiAnswers(new Array(multiQuestions.length).fill(null))
+  }
 
   return (
     <div>
@@ -578,6 +616,78 @@ export default function TaskDayPage() {
                     </span>
                   ) : (
                     '提交'
+                  )}
+                </button>
+              </div>
+            )}
+
+            {/* MULTI_QUIZ */}
+            {task.taskType === 'MULTI_QUIZ' && (
+              <div className="space-y-6">
+                {multiQuestions.map((q, qIdx) => (
+                  <div
+                    key={qIdx}
+                    className={`rounded-lg border-2 p-4 transition-colors ${
+                      wrongIndices.includes(qIdx)
+                        ? 'border-red-300 bg-red-50'
+                        : 'border-gray-100 bg-gray-50'
+                    }`}
+                  >
+                    <p className="font-medium text-cny-dark mb-3 text-sm">
+                      <span className="text-imperial-gold-600 mr-1">Q{qIdx + 1}.</span>
+                      {q.question}
+                    </p>
+                    <div className="space-y-2">
+                      {q.options.map((opt, oIdx) => (
+                        <label
+                          key={oIdx}
+                          className={`flex items-center gap-3 p-2.5 rounded-lg border-2 cursor-pointer transition-colors ${
+                            multiAnswers[qIdx] === oIdx
+                              ? 'border-lucky-red bg-lucky-red-50'
+                              : 'border-gray-200 bg-white hover:border-imperial-gold-200'
+                          }`}
+                        >
+                          <input
+                            type="radio"
+                            name={`multi-q-${qIdx}`}
+                            value={oIdx}
+                            checked={multiAnswers[qIdx] === oIdx}
+                            onChange={() => {
+                              const next = [...multiAnswers]
+                              next[qIdx] = oIdx
+                              setMultiAnswers(next)
+                              if (wrongIndices.includes(qIdx)) {
+                                setWrongIndices(wrongIndices.filter((i) => i !== qIdx))
+                              }
+                            }}
+                            className="accent-lucky-red w-4 h-4 flex-shrink-0"
+                          />
+                          <span className="text-sm">{opt}</span>
+                        </label>
+                      ))}
+                    </div>
+                    {wrongIndices.includes(qIdx) && (
+                      <p className="text-red-500 text-xs mt-2">此題答錯，請重新選擇</p>
+                    )}
+                  </div>
+                ))}
+
+                <div className="text-center text-sm text-gray-500 mb-2">
+                  已作答 {multiAnswers.filter((a) => a !== null).length}/{multiQuestions.length} 題
+                </div>
+
+                <button
+                  onClick={handleMultiQuizSubmit}
+                  disabled={submitting || multiAnswers.some((a) => a === null)}
+                  className="cny-btn-primary w-full"
+                >
+                  {submitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      提交中...
+                    </span>
+                  ) : (
+                    '提交答案'
                   )}
                 </button>
               </div>

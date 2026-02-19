@@ -19,6 +19,7 @@ enum TaskType {
   MINI_GAME
   PHOTO_UPLOAD
   PHOTO_TEXT
+  MULTI_QUIZ
 }
 
 enum PointType {
