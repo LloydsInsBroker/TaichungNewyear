@@ -79,6 +79,20 @@ export async function POST(
     body.answer = JSON.stringify({ photoUrl: body.photoUrl, text: body.text.trim() })
   }
 
+  if (task.taskType === 'BOOK_DATE') {
+    if (!body.bookName || typeof body.bookName !== 'string' || body.bookName.trim().length === 0) {
+      return NextResponse.json({ error: '請輸入書名' }, { status: 400 })
+    }
+    if (!body.targetDate || typeof body.targetDate !== 'string') {
+      return NextResponse.json({ error: '請選擇預計看完日期' }, { status: 400 })
+    }
+    const dateVal = new Date(body.targetDate)
+    if (isNaN(dateVal.getTime())) {
+      return NextResponse.json({ error: '日期格式不正確' }, { status: 400 })
+    }
+    body.answer = JSON.stringify({ bookName: body.bookName.trim(), targetDate: body.targetDate })
+  }
+
   if (task.taskType === 'MULTI_QUIZ') {
     if (existing) {
       return NextResponse.json({ error: 'Task already completed' }, { status: 400 })

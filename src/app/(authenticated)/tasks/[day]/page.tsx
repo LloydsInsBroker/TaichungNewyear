@@ -17,7 +17,7 @@ interface TaskDetail {
   date: string
   title: string
   description: string
-  taskType: 'CHECK_IN' | 'QUIZ' | 'TEXT_ANSWER' | 'MINI_GAME' | 'PHOTO_UPLOAD' | 'PHOTO_TEXT' | 'MULTI_QUIZ'
+  taskType: 'CHECK_IN' | 'QUIZ' | 'TEXT_ANSWER' | 'MINI_GAME' | 'PHOTO_UPLOAD' | 'PHOTO_TEXT' | 'MULTI_QUIZ' | 'BOOK_DATE'
   taskConfig: Record<string, unknown> | null
   points: number
   isOpen: boolean
@@ -51,6 +51,10 @@ export default function TaskDayPage() {
   // Multi-quiz state
   const [multiAnswers, setMultiAnswers] = useState<(number | null)[]>([])
   const [wrongIndices, setWrongIndices] = useState<number[]>([])
+
+  // Book date state
+  const [bookName, setBookName] = useState('')
+  const [targetDate, setTargetDate] = useState('')
 
   // Scratch card state
   const [scratchCard, setScratchCard] = useState<{
@@ -237,6 +241,33 @@ export default function TaskDayPage() {
     }
   }
 
+  async function handleBookDateSubmit() {
+    if (!task || submitting) return
+    if (!bookName.trim() || !targetDate) return
+    setSubmitting(true)
+    setSubmitError('')
+
+    try {
+      const res = await fetch(`/api/tasks/${day}/complete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookName: bookName.trim(), targetDate }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setSubmitError(data.error || 'Submission failed')
+        return
+      }
+      setResult(data)
+      const updated = await fetch(`/api/tasks/${day}`).then((r) => r.json())
+      setTask(updated)
+    } catch {
+      setSubmitError('Network error')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   async function handleSubmit() {
     if (!task || submitting) return
     setSubmitting(true)
@@ -309,6 +340,7 @@ export default function TaskDayPage() {
   const minLength = (config?.minLength as number) ?? 1
   const textPlaceholder = (config?.placeholder as string) ?? '請輸入你的回答...'
   const multiQuestions = (config?.questions as Array<{ question: string; options: string[]; correctAnswer: number }>) ?? []
+  const bookPlaceholder = (config?.bookPlaceholder as string) ?? '請輸入書名...'
 
   // Initialize multiAnswers when questions load
   if (multiQuestions.length > 0 && multiAnswers.length !== multiQuestions.length) {
@@ -693,6 +725,46 @@ export default function TaskDayPage() {
               </div>
             )}
 
+            {/* BOOK_DATE */}
+            {task.taskType === 'BOOK_DATE' && (
+              <div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-cny-dark mb-1.5">書名</label>
+                  <input
+                    type="text"
+                    value={bookName}
+                    onChange={(e) => setBookName(e.target.value)}
+                    placeholder={bookPlaceholder}
+                    className="w-full border-2 border-imperial-gold-200 rounded-lg p-3 text-sm focus:outline-none focus:border-lucky-red transition-colors"
+                  />
+                </div>
+                <div className="mb-5">
+                  <label className="block text-sm font-medium text-cny-dark mb-1.5">預計看完日期</label>
+                  <input
+                    type="date"
+                    value={targetDate}
+                    onChange={(e) => setTargetDate(e.target.value)}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="w-full border-2 border-imperial-gold-200 rounded-lg p-3 text-sm focus:outline-none focus:border-lucky-red transition-colors"
+                  />
+                </div>
+                <button
+                  onClick={handleBookDateSubmit}
+                  disabled={submitting || !bookName.trim() || !targetDate}
+                  className="cny-btn-primary w-full"
+                >
+                  {submitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      提交中...
+                    </span>
+                  ) : (
+                    '提交閱讀計畫'
+                  )}
+                </button>
+              </div>
+            )}
+
             {submitError && (
               <p className="text-red-500 text-sm text-center mt-3">{submitError}</p>
             )}
@@ -795,6 +867,20 @@ export default function TaskDayPage() {
                         <p className="text-xs text-gray-500">
                           &ldquo;{parsed.text}&rdquo;
                         </p>
+                      </div>
+                    )
+                  } catch {
+                    return null
+                  }
+                })()}
+                {task.taskType === 'BOOK_DATE' && c.answer && (() => {
+                  try {
+                    const parsed = JSON.parse(c.answer)
+                    return (
+                      <div className="ml-11 mt-1 text-xs text-gray-500">
+                        <span>📖 {parsed.bookName}</span>
+                        <span className="mx-1">·</span>
+                        <span>目標 {new Date(parsed.targetDate).toLocaleDateString('zh-TW', { year: 'numeric', month: 'long', day: 'numeric' })} 前讀完</span>
                       </div>
                     )
                   } catch {

@@ -45,7 +45,7 @@ export async function GET(
       displayName: c.user.displayName,
       pictureUrl: c.user.pictureUrl,
       completedAt: c.completedAt.toISOString(),
-      ...((task.taskType === 'TEXT_ANSWER' || task.taskType === 'PHOTO_UPLOAD') && { answer: c.answer }),
+      ...((task.taskType === 'TEXT_ANSWER' || task.taskType === 'PHOTO_UPLOAD' || task.taskType === 'BOOK_DATE') && { answer: c.answer }),
     })),
   })
 }

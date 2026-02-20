@@ -20,6 +20,7 @@ enum TaskType {
   PHOTO_UPLOAD
   PHOTO_TEXT
   MULTI_QUIZ
+  BOOK_DATE
 }
 
 enum PointType {

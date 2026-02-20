@@ -123,12 +123,12 @@ const tasks: Prisma.DailyTaskCreateInput[] = [
   {
     day: 7,
     date: new Date('2025-02-20'),
-    title: '💬 團隊感謝',
-    description: '寫下你想感謝的一位同事，以及感謝的原因！',
-    taskType: TaskType.TEXT_ANSWER,
+    title: '📚 新年閱讀計畫',
+    description: '新的一年，給自己一個閱讀目標！寫下一本你想讀的書，並設定預計看完的日期吧！',
+    taskType: TaskType.BOOK_DATE,
     taskConfig: {
-      minLength: 15,
-      placeholder: '我想感謝...',
+      bookPlaceholder: '請輸入書名...',
+      datePlaceholder: '選擇預計看完日期',
     },
     points: 2,
   },
