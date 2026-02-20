@@ -15,18 +15,30 @@ export async function GET(
     return NextResponse.json({ error: 'Invalid day' }, { status: 400 })
   }
 
-  const draw = await prisma.bonusDraw.findUnique({
-    where: { taskDay },
+  const draw = await prisma.bonusDraw.findFirst({
+    where: { taskDay, isDonated: false },
     include: { winner: { select: { displayName: true, pictureUrl: true } } },
   })
 
+  const donated = await prisma.bonusDraw.findMany({
+    where: { taskDay, isDonated: true },
+    include: { winner: { select: { displayName: true, pictureUrl: true } } },
+    orderBy: { createdAt: 'asc' },
+  })
+  const donors = donated.map((d) => ({
+    displayName: d.winner.displayName,
+    pictureUrl: d.winner.pictureUrl,
+    prizeName: d.prizeName,
+  }))
+
   if (!draw) {
-    return NextResponse.json({ hasDraw: false })
+    return NextResponse.json({ hasDraw: false, donors })
   }
 
   return NextResponse.json({
     hasDraw: true,
     winner: { displayName: draw.winner.displayName, pictureUrl: draw.winner.pictureUrl },
     prizeName: draw.prizeName,
+    donors,
   })
 }

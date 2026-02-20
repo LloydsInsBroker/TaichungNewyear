@@ -179,10 +179,13 @@ model ScratchCard {
 
 model BonusDraw {
   id        String   @id @default(cuid())
-  taskDay   Int      @unique
+  taskDay   Int
   winnerId  String
   prizeName String
+  isDonated Boolean  @default(false)
   createdAt DateTime @default(now())
 
   winner    User     @relation(fields: [winnerId], references: [id])
+
+  @@index([taskDay, isDonated])
 }

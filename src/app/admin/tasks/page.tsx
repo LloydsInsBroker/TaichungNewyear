@@ -26,7 +26,7 @@ export default function AdminTasksPage() {
   const [closing, setClosing] = useState<number | null>(null)
   const [scratchStatus, setScratchStatus] = useState<Record<number, { totalCards: number; scratchedCount: number; winner: any; winners?: any[] }>>({})
   const [generating, setGenerating] = useState<number | null>(null)
-  const [drawStatus, setDrawStatus] = useState<Record<number, { hasDraw: boolean; winner?: any; prizeName?: string; eligibleUsers?: any[] }>>({})
+  const [drawStatus, setDrawStatus] = useState<Record<number, { hasDraw: boolean; winner?: any; prizeName?: string; eligibleUsers?: any[]; donors?: any[] }>>({})
   const [drawing, setDrawing] = useState<number | null>(null)
   const [drawAnimation, setDrawAnimation] = useState<{ day: number; users: any[]; winner: any; prizeName: string } | null>(null)
 
@@ -142,6 +142,26 @@ export default function AdminTasksPage() {
       alert('已確認抽獎結果！')
       setDrawAnimation(null)
       fetchDrawStatus(day)
+    } catch {
+      alert('網路錯誤')
+    }
+  }
+
+  async function donateBonusDraw(day: number) {
+    if (!confirm('確定要讓中獎人捐出並重新抽獎嗎？')) return
+    try {
+      const res = await fetch('/api/admin/bonus-draw', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ taskDay: day }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        alert(data.error || '操作失敗')
+        return
+      }
+      // Start new draw
+      startBonusDraw(day)
     } catch {
       alert('網路錯誤')
     }
@@ -388,11 +408,27 @@ export default function AdminTasksPage() {
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-xs font-bold text-red-600">🎆 限時加碼抽獎</span>
                     </div>
+                    {drawStatus[task.day]?.donors && drawStatus[task.day]?.donors!.length > 0 && (
+                      <div className="text-xs text-gray-500 space-y-0.5 mb-2">
+                        {drawStatus[task.day]?.donors!.map((d: any, i: number) => (
+                          <p key={i} className="text-orange-600">
+                            🎁 {d.displayName} — 捐出 {d.prizeName}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                     {drawStatus[task.day]?.hasDraw ? (
-                      <div className="text-xs text-gray-600 space-y-1">
+                      <div className="text-xs text-gray-600 space-y-2">
                         <p className="text-red-700 font-medium">
                           已抽獎：{drawStatus[task.day].winner?.displayName} — {drawStatus[task.day].prizeName}
                         </p>
+                        <button
+                          onClick={() => donateBonusDraw(task.day)}
+                          disabled={drawing === task.day}
+                          className="text-xs bg-orange-500 text-white px-3 py-1.5 rounded hover:bg-orange-600 disabled:opacity-50"
+                        >
+                          {drawing === task.day ? '處理中...' : '重抽（中獎人捐出）'}
+                        </button>
                       </div>
                     ) : (
                       <button

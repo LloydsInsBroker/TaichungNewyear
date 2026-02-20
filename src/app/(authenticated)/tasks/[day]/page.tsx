@@ -69,6 +69,7 @@ export default function TaskDayPage() {
     hasDraw: boolean
     winner?: { displayName: string; pictureUrl: string | null }
     prizeName?: string
+    donors?: { displayName: string; pictureUrl: string | null; prizeName: string }[]
   } | null>(null)
 
   // Photo upload state
@@ -772,33 +773,63 @@ export default function TaskDayPage() {
         )}
       </div>
 
-      {/* Bonus draw winner */}
-      {bonusDraw?.hasDraw && bonusDraw.winner && (
+      {/* Bonus draw winner + donors */}
+      {(bonusDraw?.hasDraw || (bonusDraw?.donors && bonusDraw.donors.length > 0)) && (
         <div className="cny-card p-4 mt-4 bg-gradient-to-r from-red-50 to-yellow-50 border-red-200">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-lg">🎊</span>
-            <span className="font-bold text-red-700 text-sm">限時加碼得主</span>
-          </div>
-          <div className="flex items-center gap-3">
-            {bonusDraw.winner.pictureUrl ? (
-              <img
-                src={bonusDraw.winner.pictureUrl}
-                alt={bonusDraw.winner.displayName}
-                className="w-10 h-10 rounded-full object-cover border-2 border-yellow-400"
-                referrerPolicy="no-referrer"
-              />
-            ) : (
-              <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center border-2 border-yellow-400">
-                <span className="text-yellow-700 font-bold text-sm">
-                  {bonusDraw.winner.displayName.charAt(0)}
-                </span>
-              </div>
-            )}
-            <div>
-              <span className="font-bold text-cny-dark">{bonusDraw.winner.displayName}</span>
-              <span className="text-gray-500 text-sm ml-2">— {bonusDraw.prizeName}</span>
+          {bonusDraw.donors && bonusDraw.donors.length > 0 && (
+            <div className="mb-3">
+              {bonusDraw.donors.map((d, i) => (
+                <div key={i} className="flex items-center gap-3 mb-2 opacity-60">
+                  {d.pictureUrl ? (
+                    <img
+                      src={d.pictureUrl}
+                      alt={d.displayName}
+                      className="w-8 h-8 rounded-full object-cover border border-gray-300 grayscale"
+                      referrerPolicy="no-referrer"
+                    />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center border border-gray-300">
+                      <span className="text-gray-500 font-bold text-xs">
+                        {d.displayName.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="text-sm">
+                    <span className="text-gray-500 line-through">{d.displayName}</span>
+                    <span className="text-orange-500 text-xs ml-2 font-medium">已捐出</span>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
+          {bonusDraw.hasDraw && bonusDraw.winner && (
+            <>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-lg">🎊</span>
+                <span className="font-bold text-red-700 text-sm">限時加碼得主</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {bonusDraw.winner.pictureUrl ? (
+                  <img
+                    src={bonusDraw.winner.pictureUrl}
+                    alt={bonusDraw.winner.displayName}
+                    className="w-10 h-10 rounded-full object-cover border-2 border-yellow-400"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center border-2 border-yellow-400">
+                    <span className="text-yellow-700 font-bold text-sm">
+                      {bonusDraw.winner.displayName.charAt(0)}
+                    </span>
+                  </div>
+                )}
+                <div>
+                  <span className="font-bold text-cny-dark">{bonusDraw.winner.displayName}</span>
+                  <span className="text-gray-500 text-sm ml-2">— {bonusDraw.prizeName}</span>
+                </div>
+              </div>
+            </>
+          )}
         </div>
       )}
 

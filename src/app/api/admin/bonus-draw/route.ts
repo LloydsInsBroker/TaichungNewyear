@@ -26,11 +26,23 @@ export async function GET(request: NextRequest) {
     pictureUrl: c.user.pictureUrl,
   }))
 
-  // Check existing draw
-  const draw = await prisma.bonusDraw.findUnique({
-    where: { taskDay },
+  // Check current (non-donated) draw
+  const draw = await prisma.bonusDraw.findFirst({
+    where: { taskDay, isDonated: false },
     include: { winner: { select: { displayName: true, pictureUrl: true } } },
   })
+
+  // Get donated draws
+  const donated = await prisma.bonusDraw.findMany({
+    where: { taskDay, isDonated: true },
+    include: { winner: { select: { displayName: true, pictureUrl: true } } },
+    orderBy: { createdAt: 'asc' },
+  })
+  const donors = donated.map((d) => ({
+    displayName: d.winner.displayName,
+    pictureUrl: d.winner.pictureUrl,
+    prizeName: d.prizeName,
+  }))
 
   if (draw) {
     return NextResponse.json({
@@ -38,10 +50,11 @@ export async function GET(request: NextRequest) {
       winner: { displayName: draw.winner.displayName, pictureUrl: draw.winner.pictureUrl },
       prizeName: draw.prizeName,
       eligibleUsers,
+      donors,
     })
   }
 
-  return NextResponse.json({ hasDraw: false, eligibleUsers })
+  return NextResponse.json({ hasDraw: false, eligibleUsers, donors })
 }
 
 export async function POST(request: NextRequest) {
@@ -63,20 +76,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Task must be closed first' }, { status: 400 })
   }
 
-  // Check if already confirmed
-  const existing = await prisma.bonusDraw.findUnique({ where: { taskDay } })
+  // Check if already confirmed (non-donated)
+  const existing = await prisma.bonusDraw.findFirst({ where: { taskDay, isDonated: false } })
   if (existing) {
     return NextResponse.json({ error: '此天已確認過抽獎結果' }, { status: 409 })
   }
 
-  // Get all completers
+  // Get all completers, exclude donated winners
+  const donated = await prisma.bonusDraw.findMany({
+    where: { taskDay, isDonated: true },
+    select: { winnerId: true },
+  })
+  const donorIds = donated.map((d) => d.winnerId)
+
   const completions = await prisma.taskCompletion.findMany({
-    where: { taskId: task.id },
+    where: {
+      taskId: task.id,
+      ...(donorIds.length > 0 && { userId: { notIn: donorIds } }),
+    },
     include: { user: { select: { id: true, displayName: true, pictureUrl: true } } },
   })
 
   if (completions.length === 0) {
-    return NextResponse.json({ error: 'No completions found' }, { status: 400 })
+    return NextResponse.json({ error: '沒有可抽獎的參與者了' }, { status: 400 })
   }
 
   // Random pick
@@ -101,8 +123,8 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: 'taskDay, winnerId, and prizeName are required' }, { status: 400 })
   }
 
-  // Check if already confirmed
-  const existing = await prisma.bonusDraw.findUnique({ where: { taskDay } })
+  // Check if already confirmed (non-donated)
+  const existing = await prisma.bonusDraw.findFirst({ where: { taskDay, isDonated: false } })
   if (existing) {
     return NextResponse.json({ error: '此天已確認過抽獎結果' }, { status: 409 })
   }
@@ -116,4 +138,29 @@ export async function PATCH(request: NextRequest) {
     success: true,
     winner: { displayName: draw.winner.displayName, pictureUrl: draw.winner.pictureUrl },
   })
+}
+
+// PUT: Mark current winner as donated, allowing re-draw
+export async function PUT(request: NextRequest) {
+  const { error } = await requireAdmin()
+  if (error) return error
+
+  const body = await request.json()
+  const { taskDay } = body as { taskDay: number }
+
+  if (!taskDay) {
+    return NextResponse.json({ error: 'taskDay is required' }, { status: 400 })
+  }
+
+  const existing = await prisma.bonusDraw.findFirst({ where: { taskDay, isDonated: false } })
+  if (!existing) {
+    return NextResponse.json({ error: '此天尚無已確認的抽獎結果' }, { status: 404 })
+  }
+
+  await prisma.bonusDraw.update({
+    where: { id: existing.id },
+    data: { isDonated: true },
+  })
+
+  return NextResponse.json({ success: true })
 }
