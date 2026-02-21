@@ -135,10 +135,13 @@ const tasks: Prisma.DailyTaskCreateInput[] = [
   {
     day: 8,
     date: new Date('2025-02-21'),
-    title: '🎮 幸運簽到',
-    description: '倒數第二天！簽到收集最後的積分，為抽獎做準備！',
-    taskType: TaskType.CHECK_IN,
-    taskConfig: Prisma.JsonNull,
+    title: '⚖️ 健康新希望',
+    description: '站上體重機拍一張照片（要出現體重機喔！），並許下你的健康願望！',
+    taskType: TaskType.PHOTO_TEXT,
+    taskConfig: {
+      minLength: 5,
+      placeholder: '寫下你的健康願望...',
+    },
     points: 2,
   },
   {
