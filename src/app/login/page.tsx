@@ -1,36 +1,35 @@
 'use client'
 
 import { signIn } from 'next-auth/react'
+import { useSearchParams } from 'next/navigation'
+import { Suspense } from 'react'
 
-export default function LoginPage() {
+function LoginInner() {
+  const params = useSearchParams()
+  const callbackUrl = params.get('callbackUrl') || '/design'
+
   return (
-    <div className="min-h-screen cny-gradient flex flex-col items-center justify-center px-6">
-      {/* Decorative lanterns */}
-      <div className="absolute top-0 left-8 text-6xl animate-lantern-swing origin-top">
-        🏮
-      </div>
-      <div className="absolute top-0 right-8 text-6xl animate-lantern-swing origin-top" style={{ animationDelay: '1s' }}>
-        🏮
-      </div>
-
+    <div className="min-h-screen bg-stone-50 flex flex-col items-center justify-center px-6">
       {/* Main content */}
-      <div className="text-center mb-12">
-        <div className="text-8xl mb-4 animate-bounce-in">🧧</div>
-        <h1 className="text-4xl font-black text-imperial-gold mb-2">
-          新年快樂
+      <div className="text-center mb-10">
+        <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-stone-800 to-stone-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+          AI
+        </div>
+        <h1 className="text-3xl font-bold text-stone-900 tracking-tight">
+          AI 居家設計提案
         </h1>
-        <p className="text-lucky-red-100 text-lg">
-          團隊限時活動 2/14 ~ 2/22
+        <p className="text-stone-500 text-sm mt-2">
+          選擇條件、上傳參考圖，30 秒生成你的設計概念板
         </p>
       </div>
 
       {/* Login card */}
-      <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-2xl">
-        <h2 className="text-xl font-bold text-center text-cny-dark mb-6">
-          登入參加活動
+      <div className="bg-white rounded-2xl p-8 w-full max-w-sm shadow-md border border-stone-200">
+        <h2 className="text-base font-semibold text-center text-stone-800 mb-6">
+          請使用 LINE 登入以開始
         </h2>
         <button
-          onClick={() => signIn('line', { callbackUrl: '/tasks' })}
+          onClick={() => signIn('line', { callbackUrl })}
           className="w-full flex items-center justify-center gap-3 bg-[#06C755] text-white font-bold py-3 px-6 rounded-lg hover:bg-[#05b34d] transition-colors duration-200"
         >
           <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
@@ -38,17 +37,18 @@ export default function LoginPage() {
           </svg>
           使用 LINE 登入
         </button>
-        <p className="text-gray-400 text-xs text-center mt-4">
-          登入即表示同意活動規則
+        <p className="text-stone-400 text-xs text-center mt-4">
+          登入即表示同意我們使用你上傳的內容生成設計圖
         </p>
       </div>
-
-      {/* Footer decorations */}
-      <div className="mt-12 flex gap-4 text-4xl">
-        <span className="animate-float">🎆</span>
-        <span className="animate-float" style={{ animationDelay: '0.5s' }}>🎊</span>
-        <span className="animate-float" style={{ animationDelay: '1s' }}>🎆</span>
-      </div>
     </div>
+  )
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-stone-50" />}>
+      <LoginInner />
+    </Suspense>
   )
 }

@@ -37,3 +37,9 @@ next-env.d.ts
 # local scripts & misc
 /scripts/
 nul
+
+# Claude Code local state
+.claude/
+
+# AI design tool smoke-test output (local only)
+/test-output/

@@ -36,6 +36,13 @@ enum TicketStatus {
   NOT_WINNER
 }
 
+enum DesignStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
 model User {
   id            String    @id @default(cuid())
   lineUserId    String    @unique
@@ -54,6 +61,7 @@ model User {
   notifications    Notification[]
   scratchCards     ScratchCard[]
   bonusDraws       BonusDraw[]
+  designGenerations DesignGeneration[]
 }
 
 model DailyTask {
@@ -188,4 +196,22 @@ model BonusDraw {
   winner    User     @relation(fields: [winnerId], references: [id])
 
   @@index([taskDay, isDonated])
+}
+
+model DesignGeneration {
+  id              String       @id @default(cuid())
+  userId          String
+  conditions      Json         // 使用者選填的條件（房屋/空間/風格/...）
+  referenceKeys   String[]     // 上傳的參考圖 gcsKey 陣列
+  promptUsed      String       // 實際送給 OpenAI 的 prompt（debug 用）
+  resultGcsKey    String?      // 生成完成後的 GCS key
+  status          DesignStatus @default(PENDING)
+  errorMessage    String?
+  model           String       @default("gpt-image-2")
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user            User         @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
 }
