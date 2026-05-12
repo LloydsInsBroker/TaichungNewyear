@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import OptionGrid from '../_components/OptionGrid'
 import ImageUploader, { type UploadedRef } from '../_components/ImageUploader'
@@ -52,6 +52,9 @@ export default function DesignFormPage() {
   const [quota, setQuota] = useState<{ used: number; quota: number; remaining: number } | null>(null)
   const [submitting, setSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
+  // Ref-based guard: refs are synchronous, so even fast successive clicks before
+  // the `submitting` state has propagated through React's render cycle will be blocked.
+  const submittingRef = useRef(false)
 
   useEffect(() => {
     fetch('/api/design/generate')
@@ -85,6 +88,8 @@ export default function DesignFormPage() {
   }
 
   const handleSubmit = async () => {
+    if (submittingRef.current) return
+    submittingRef.current = true
     setSubmitting(true)
     setSubmitError(null)
     try {
@@ -101,10 +106,12 @@ export default function DesignFormPage() {
       if (!res.ok) {
         throw new Error(data.error || '生成失敗，請稍後再試')
       }
+      // Successful — navigate away. Don't reset the guard since the form unmounts.
       router.push(`/design/result/${data.id}`)
     } catch (err: any) {
       setSubmitError(err?.message || '生成失敗')
       setSubmitting(false)
+      submittingRef.current = false
     }
   }
 
@@ -310,7 +317,7 @@ export default function DesignFormPage() {
             onClick={handleSubmit}
             className="px-6 py-2.5 rounded-lg bg-stone-900 text-white hover:bg-stone-700 disabled:bg-stone-300 disabled:cursor-not-allowed text-sm font-medium"
           >
-            {submitting ? '生成中…' : '產生設計圖'}
+            {submitting ? '送出中…' : '產生設計圖'}
           </button>
         )}
       </div>

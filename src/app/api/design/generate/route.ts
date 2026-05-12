@@ -6,9 +6,8 @@ import { buildDesignPrompt, generateDesignImage, getImageModel } from '@/lib/ope
 import { getDailyQuota } from '@/lib/design-constants'
 import type { DesignConditions } from '@/lib/design-constants'
 
-// gpt-image-2 HD takes ~2-3 min in practice; raise route timeout well above that.
-// Note: actual ceiling depends on host (Vercel Pro caps at 300s; Cloud Run default 300s, configurable up to 3600s).
-export const maxDuration = 300
+// POST returns within ~1s now (background processing); GET is also quick.
+export const maxDuration = 60
 export const dynamic = 'force-dynamic'
 
 const TZ_OFFSET_HOURS = 8 // UTC+8 (Taiwan)
@@ -78,48 +77,106 @@ export async function POST(request: NextRequest) {
     )
   }
 
-  // Daily quota check.
   const quota = getDailyQuota()
-  const todayStart = startOfTodayInTaipei()
-  const usedToday = await prisma.designGeneration.count({
-    where: {
-      userId: user!.id,
-      createdAt: { gte: todayStart },
-      status: { in: ['PENDING', 'PROCESSING', 'COMPLETED'] },
-    },
-  })
-  if (usedToday >= quota) {
+  const prompt = buildDesignPrompt(conditions)
+
+  // Atomic quota check + create.
+  // SELECT ... FOR UPDATE on the user row serializes concurrent submissions from the same user,
+  // so parallel clicks can't all sneak past the quota check.
+  let record: { id: string; status: string }
+  let usedBeforeCreate: number
+  try {
+    const result = await prisma.$transaction(async (tx) => {
+      await tx.$queryRaw`SELECT id FROM "User" WHERE id = ${user!.id} FOR UPDATE`
+
+      const todayStart = startOfTodayInTaipei()
+      const used = await tx.designGeneration.count({
+        where: {
+          userId: user!.id,
+          createdAt: { gte: todayStart },
+          status: { in: ['PENDING', 'PROCESSING', 'COMPLETED'] },
+        },
+      })
+      if (used >= quota) {
+        const e = new Error('quota_exceeded') as Error & {
+          quotaExceeded: true
+          used: number
+          quota: number
+        }
+        e.quotaExceeded = true
+        e.used = used
+        e.quota = quota
+        throw e
+      }
+      const created = await tx.designGeneration.create({
+        data: {
+          userId: user!.id,
+          conditions: conditions as any,
+          referenceKeys: refKeys,
+          promptUsed: prompt,
+          status: 'PROCESSING',
+          model: getImageModel(),
+        },
+      })
+      return { record: created, used }
+    })
+    record = result.record
+    usedBeforeCreate = result.used
+  } catch (err: any) {
+    if (err?.quotaExceeded) {
+      return NextResponse.json(
+        {
+          error: `今日生成額度已用完（${err.used}/${err.quota}），請明天再試。`,
+          used: err.used,
+          quota: err.quota,
+        },
+        { status: 429 },
+      )
+    }
+    console.error('Failed to create design record:', err)
     return NextResponse.json(
-      {
-        error: `今日生成額度已用完（${usedToday}/${quota}），請明天再試。`,
-        used: usedToday,
-        quota,
-      },
-      { status: 429 },
+      { error: '系統錯誤，請稍後再試' },
+      { status: 500 },
     )
   }
 
-  // Build the prompt up front so we can save it even if generation fails.
-  const prompt = buildDesignPrompt(conditions)
-
-  // Create the DB record in PROCESSING state.
-  const record = await prisma.designGeneration.create({
-    data: {
-      userId: user!.id,
-      conditions: conditions as any,
-      referenceKeys: refKeys,
-      promptUsed: prompt,
-      status: 'PROCESSING',
-      model: getImageModel(),
-    },
+  // Kick off background processing — do NOT await. The HTTP response returns
+  // immediately; the Node process keeps the async function running until done.
+  void processDesignGeneration({
+    recordId: record.id,
+    refKeys,
+    prompt,
+    userId: user!.id,
   })
 
+  return NextResponse.json({
+    id: record.id,
+    status: record.status,
+    remaining: Math.max(0, quota - usedBeforeCreate - 1),
+    quota,
+  })
+}
+
+/**
+ * Background pipeline: download refs from GCS → call OpenAI → upload result → mark COMPLETED/FAILED.
+ * Runs after the HTTP response has been sent. Errors are caught and persisted so the polling client can react.
+ */
+async function processDesignGeneration({
+  recordId,
+  refKeys,
+  prompt,
+  userId,
+}: {
+  recordId: string
+  refKeys: string[]
+  prompt: string
+  userId: string
+}): Promise<void> {
   console.log(
-    `[design ${record.id}] user=${user!.id} refKeys=${refKeys.length} promptLen=${prompt.length}`,
+    `[design ${recordId}] (bg) user=${userId} refKeys=${refKeys.length} promptLen=${prompt.length}`,
   )
 
   try {
-    // Download reference images from GCS.
     const referenceImages = await Promise.all(
       refKeys.map(async (key, i) => {
         const { buffer, contentType } = await downloadGcsFile(key)
@@ -135,60 +192,47 @@ export async function POST(request: NextRequest) {
     if (referenceImages.length > 0) {
       const sizes = referenceImages.map((r) => `${(r.buffer.length / 1024).toFixed(1)}KB`).join(', ')
       console.log(
-        `[design ${record.id}] downloaded ${referenceImages.length} reference image(s) from GCS — sizes: ${sizes}`,
+        `[design ${recordId}] downloaded ${referenceImages.length} reference image(s) from GCS — sizes: ${sizes}`,
       )
     } else {
-      console.log(`[design ${record.id}] no reference images — using images.generate path`)
+      console.log(`[design ${recordId}] no reference images — using images.generate path`)
     }
 
     const startedAt = Date.now()
-    // Call OpenAI.
     const { imageB64 } = await generateDesignImage({
       prompt,
       referenceImages: referenceImages.length > 0 ? referenceImages : undefined,
     })
     const elapsedSec = ((Date.now() - startedAt) / 1000).toFixed(1)
     console.log(
-      `[design ${record.id}] OpenAI returned ${imageB64.length} b64 chars in ${elapsedSec}s`,
+      `[design ${recordId}] OpenAI returned ${imageB64.length} b64 chars in ${elapsedSec}s`,
     )
 
-    // Decode and upload result.
     const resultBuffer = Buffer.from(imageB64, 'base64')
-    const resultKey = `designs/results/${user!.id}/${record.id}.png`
+    const resultKey = `designs/results/${userId}/${recordId}.png`
     await uploadBufferToGcs(resultKey, resultBuffer, 'image/png')
 
-    // Mark as completed.
-    const updated = await prisma.designGeneration.update({
-      where: { id: record.id },
+    await prisma.designGeneration.update({
+      where: { id: recordId },
       data: {
         status: 'COMPLETED',
         resultGcsKey: resultKey,
       },
     })
-
-    return NextResponse.json({
-      id: updated.id,
-      status: updated.status,
-      remaining: Math.max(0, quota - usedToday - 1),
-      quota,
-    })
+    console.log(`[design ${recordId}] COMPLETED`)
   } catch (err: any) {
-    console.error(`Design generation failed (id=${record.id}):`, err)
-    await prisma.designGeneration.update({
-      where: { id: record.id },
-      data: {
-        status: 'FAILED',
-        errorMessage: (err?.message || 'Unknown error').slice(0, 500),
-      },
-    })
-    return NextResponse.json(
-      {
-        id: record.id,
-        status: 'FAILED',
-        error: err?.message || '生成失敗，請稍後再試',
-      },
-      { status: 500 },
-    )
+    console.error(`[design ${recordId}] FAILED:`, err)
+    try {
+      await prisma.designGeneration.update({
+        where: { id: recordId },
+        data: {
+          status: 'FAILED',
+          errorMessage: (err?.message || 'Unknown error').slice(0, 500),
+        },
+      })
+    } catch (updateErr) {
+      console.error(`[design ${recordId}] also failed to mark FAILED in DB:`, updateErr)
+    }
   }
 }
 

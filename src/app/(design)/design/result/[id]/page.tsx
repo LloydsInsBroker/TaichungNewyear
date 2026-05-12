@@ -87,11 +87,54 @@ export default function ResultPage() {
   }
 
   if (record.status === 'PROCESSING' || record.status === 'PENDING') {
+    const elapsedMs = Date.now() - new Date(record.createdAt).getTime()
+    const elapsedMin = Math.floor(elapsedMs / 60000)
+    const elapsedSec = Math.floor((elapsedMs % 60000) / 1000)
+    const stuck = elapsedMs > 10 * 60 * 1000 // 10 minutes
+
+    if (stuck) {
+      return (
+        <div className="text-center py-16">
+          <div className="text-4xl mb-3">⏱️</div>
+          <h3 className="text-lg font-semibold text-stone-900">生成時間過長</h3>
+          <p className="text-sm text-stone-600 mt-2 max-w-md mx-auto">
+            這張圖已經處理超過 10 分鐘還沒完成，後端可能卡住了。
+            這次失敗不會扣除今日額度。
+          </p>
+          <div className="mt-6 flex justify-center gap-3">
+            <Link
+              href="/design"
+              className="px-5 py-2 rounded-lg bg-stone-900 text-white text-sm hover:bg-stone-700"
+            >
+              重新生成
+            </Link>
+            <Link
+              href="/design/history"
+              className="px-5 py-2 rounded-lg border border-stone-300 text-sm hover:bg-stone-100"
+            >
+              我的記錄
+            </Link>
+          </div>
+        </div>
+      )
+    }
+
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <div className="w-10 h-10 border-2 border-stone-900 border-t-transparent rounded-full animate-spin" />
         <p className="text-base text-stone-700 mt-6">AI 正在生成你的設計提案…</p>
-        <p className="text-xs text-stone-400 mt-1">通常需要 30-60 秒，請勿關閉頁面</p>
+        <p className="text-xs text-stone-400 mt-1">
+          已等待 {elapsedMin > 0 ? `${elapsedMin} 分 ` : ''}{elapsedSec} 秒（通常 2-3 分鐘）
+        </p>
+        <p className="text-xs text-stone-400 mt-3 max-w-xs text-center">
+          你可以離開這個頁面去做其他事，之後回到「我的記錄」就能看到結果
+        </p>
+        <Link
+          href="/design/history"
+          className="mt-6 text-sm text-stone-600 underline-offset-2 hover:underline"
+        >
+          先去看歷史記錄
+        </Link>
       </div>
     )
   }
@@ -117,14 +160,22 @@ export default function ResultPage() {
   // COMPLETED
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex items-center justify-between gap-3">
         <h2 className="text-xl font-semibold tracking-tight">你的設計提案</h2>
-        <button
-          onClick={() => router.push('/design')}
-          className="text-sm px-4 py-2 rounded-lg border border-stone-300 hover:bg-stone-100"
-        >
-          再生一張
-        </button>
+        <div className="flex gap-2 shrink-0">
+          <Link
+            href="/design/history"
+            className="text-sm px-4 py-2 rounded-lg border border-stone-300 hover:bg-stone-100"
+          >
+            我的記錄
+          </Link>
+          <button
+            onClick={() => router.push('/design')}
+            className="text-sm px-4 py-2 rounded-lg bg-stone-900 text-white hover:bg-stone-700"
+          >
+            再生一張
+          </button>
+        </div>
       </div>
 
       {record.imageUrl && (
