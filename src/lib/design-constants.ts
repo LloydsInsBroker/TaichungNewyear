@@ -69,6 +69,9 @@ export const LIFESTYLES: Option[] = [
   { value: 'entertain', label: '常招待朋友', desc: 'designed for entertaining, larger dining, bar / drink corner' },
   { value: 'wfh', label: '居家工作', desc: 'dedicated home-office area, ergonomic, quiet zoning' },
   { value: 'cooking', label: '熱愛料理', desc: 'serious cook kitchen with island, pro appliances, prep zones' },
+  { value: 'creator', label: '拍片 / 直播', desc: 'content-creator zone with clean backdrop wall, ring/key lighting, soundproofing, neutral mic-friendly surfaces' },
+  { value: 'gaming', label: '電競 / 遊戲房', desc: 'gaming setup with ultra-wide desk, ergonomic chair, ambient RGB lighting, cable management, dedicated PC/console area' },
+  { value: 'collector', label: '收藏展示', desc: 'figure / model / sneaker / vinyl display walls with internal LED lighting and museum-style spotlights' },
 ]
 
 // ===== Step 3-3: 收納需求（多選）=====
@@ -88,6 +91,8 @@ export const SPECIAL_NEEDS: Option[] = [
   { value: 'accessible', label: '無障礙', desc: 'wheelchair accessible, wider doors, accessible bathroom' },
   { value: 'sound', label: '隔音強化', desc: 'acoustic treatments, sound-isolated bedrooms' },
   { value: 'eco', label: '環保建材', desc: 'low-VOC and eco-friendly materials throughout' },
+  { value: 'rgb-friendly', label: 'RGB 氛圍燈友善', desc: 'integrated RGB / addressable LED strip channels along ceilings, coves, and shelving for color-shifting ambient lighting' },
+  { value: 'streaming-bg', label: '拍片背景友善', desc: 'one signature feature wall (panelling, plants, or texture) designed to look great as a video backdrop' },
 ]
 
 // ===== Step 4-1: 風格 =====
@@ -102,6 +107,13 @@ export const STYLES: Option[] = [
   { value: 'vintage', label: '中古風', desc: 'vintage / retro, mixed eras, terrazzo, curved silhouettes, warm tobacco and rust tones' },
   { value: 'industrial', label: '工業風', desc: 'industrial, exposed concrete and steel, blackened metal frames, raw textures' },
   { value: 'french', label: '法式', desc: 'French classic, wainscoting, curved moldings, soft pastels, brass hardware' },
+  { value: 'cyberpunk', label: '賽博龐克', desc: 'cyberpunk neo-noir interior, dark walls with magenta and cyan neon accents, holographic surfaces, exposed cable management, smart-glass partitions, LED strip lighting along ceiling and floor, futuristic urban Tokyo / Hong Kong street-level vibe' },
+  { value: 'dark-academia', label: '黑暗學院', desc: 'dark academia, deep walnut paneling, leather-bound bookcases floor to ceiling, brass desk lamps, oxblood and forest-green leather seating, vintage globes, brooding scholarly atmosphere' },
+  { value: 'y2k', label: 'Y2K 千禧', desc: 'Y2K millennium aesthetic, glossy translucent acrylic furniture, chrome and frosted plastic, bubblegum pink and baby blue and lime green pastels, inflatable-style soft shapes, 2000s nostalgia' },
+  { value: 'korean', label: '韓系極簡', desc: "Korean apartment aesthetic, warm cream walls, light oak floors, mid-tone wood shelving, soft natural light, simple rounded ceramics, minimal but cozy, popular on Korean Instagram" },
+  { value: 'urban-jungle', label: '都市叢林', desc: 'urban jungle, abundant indoor plants (monstera, fiddle-leaf fig, hanging pothos), terracotta planters, woven baskets, natural rattan and linen, biophilic design' },
+  { value: 'maximalism', label: '極繁主義', desc: 'maximalism, saturated color blocking, layered patterns mixing florals and geometrics, gallery walls of framed art, rich textile mixing, deliberate visual abundance' },
+  { value: 'dark-minimal', label: '暗黑極簡', desc: 'dark minimalism, deep charcoal and matte black walls, brass / blackened-steel accents, dramatic spot lighting, sculptural single-statement furniture, restrained but moody' },
 ]
 
 // ===== Step 4-2: 色系 =====
@@ -114,6 +126,10 @@ export const COLOR_SCHEMES: Option[] = [
   { value: 'morandi', label: '莫蘭迪', desc: 'Morandi muted palette, dusty sage, blush pink, ash blue, soft and powdery' },
   { value: 'earth', label: '大地色', desc: 'earth tones, terracotta, ochre, sand, clay-warm' },
   { value: 'cool', label: '冷色調', desc: 'cool palette, soft blues and greens, fresh and airy' },
+  { value: 'neon-cyber', label: '霓虹賽博', desc: 'neon cyberpunk palette, near-black base with electric magenta (#FF00C8), cyan (#00FFFF), and electric purple highlights, glowing accents against dark surfaces' },
+  { value: 'pastel-y2k', label: '千禧粉藍', desc: 'Y2K pastel palette, bubblegum pink (#FFC4E1), baby blue (#B5DEFF), mint (#C9F2C7), with chrome silver and translucent white accents' },
+  { value: 'dark-jewel', label: '暗黑寶石', desc: 'dark jewel-tone palette, deep emerald green, oxblood burgundy, midnight navy, with warm brass accents on near-black walls' },
+  { value: 'desert-warm', label: '沙漠暖調', desc: 'desert warm palette, terracotta, rust orange, sand cream, and cactus green, sun-baked and warm' },
 ]
 
 // ===== Step 4-3: 材質（多選）=====
@@ -128,6 +144,11 @@ export const MATERIALS: Option[] = [
   { value: 'rattan', label: '藤編', desc: 'rattan / cane weave detailing on furniture' },
   { value: 'microcement', label: '微水泥', desc: 'microcement seamless walls and floors, contemporary raw look' },
   { value: 'terrazzo', label: '磨石子', desc: 'terrazzo flooring with mixed aggregate chips' },
+  { value: 'led', label: 'LED 燈帶', desc: 'integrated linear LED strip lighting along ceilings, coves, under cabinets, and shelving — color-shifting capable for ambient mood' },
+  { value: 'acrylic', label: '壓克力 / 透明', desc: 'translucent and frosted acrylic surfaces, glossy and reflective, often tinted, Y2K and contemporary feel' },
+  { value: 'velvet', label: '絲絨', desc: 'plush velvet upholstery on sofas and headboards, rich light-absorbing texture in jewel tones' },
+  { value: 'concrete-raw', label: '清水模 / 裸混凝土', desc: 'exposed raw concrete walls and floors with characteristic form-tie holes, brutalist tactile finish' },
+  { value: 'plant', label: '室內植栽', desc: 'abundant living plants — large monstera, fiddle-leaf fig, hanging pothos — as primary decorative element' },
 ]
 
 // ===== 配額 =====
