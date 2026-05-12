@@ -114,6 +114,10 @@ export async function POST(request: NextRequest) {
     },
   })
 
+  console.log(
+    `[design ${record.id}] user=${user!.id} refKeys=${refKeys.length} promptLen=${prompt.length}`,
+  )
+
   try {
     // Download reference images from GCS.
     const referenceImages = await Promise.all(
@@ -128,11 +132,25 @@ export async function POST(request: NextRequest) {
       }),
     )
 
+    if (referenceImages.length > 0) {
+      const sizes = referenceImages.map((r) => `${(r.buffer.length / 1024).toFixed(1)}KB`).join(', ')
+      console.log(
+        `[design ${record.id}] downloaded ${referenceImages.length} reference image(s) from GCS — sizes: ${sizes}`,
+      )
+    } else {
+      console.log(`[design ${record.id}] no reference images — using images.generate path`)
+    }
+
+    const startedAt = Date.now()
     // Call OpenAI.
     const { imageB64 } = await generateDesignImage({
       prompt,
       referenceImages: referenceImages.length > 0 ? referenceImages : undefined,
     })
+    const elapsedSec = ((Date.now() - startedAt) / 1000).toFixed(1)
+    console.log(
+      `[design ${record.id}] OpenAI returned ${imageB64.length} b64 chars in ${elapsedSec}s`,
+    )
 
     // Decode and upload result.
     const resultBuffer = Buffer.from(imageB64, 'base64')

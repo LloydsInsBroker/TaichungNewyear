@@ -165,6 +165,9 @@ export async function generateDesignImage({
       ),
     )
 
+    console.log(
+      `[openai] model=${model} mode=images.edit refs=${files.length} size=${size} quality=${quality}`,
+    )
     const result = await openai.images.edit({
       model,
       image: files,
@@ -175,6 +178,9 @@ export async function generateDesignImage({
     })
     b64 = result.data?.[0]?.b64_json
   } else {
+    console.log(
+      `[openai] model=${model} mode=images.generate refs=0 size=${size} quality=${quality}`,
+    )
     const result = await openai.images.generate({
       model,
       prompt,
